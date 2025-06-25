@@ -7,7 +7,6 @@ import { Check, Shield, Clock, CreditCard, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import SignInModal from "@/components/auth/SignInModal";
 import RegisterModal from "@/components/auth/RegisterModal";
-
 const Index = () => {
   const [loanAmount, setLoanAmount] = useState([5000]);
   const [loanTerm, setLoanTerm] = useState([12]);
@@ -19,25 +18,20 @@ const Index = () => {
   const formatNAD = (amount: number) => {
     return `N$${amount.toLocaleString()}`;
   };
-
   const traditionalMonthlyPayment = Math.round(loanAmount[0] * 1.3 / loanTerm[0]);
   const traditionalTotalCost = Math.round(loanAmount[0] * 1.3);
   const bridgeMonthlyPayment = Math.round((loanAmount[0] + 249 * loanTerm[0]) / loanTerm[0]);
   const bridgeTotalCost = loanAmount[0] + 249 * loanTerm[0];
   const totalSavings = traditionalTotalCost - bridgeTotalCost;
-
   const handleSwitchToRegister = () => {
     setShowSignIn(false);
     setShowRegister(true);
   };
-
   const handleSwitchToSignIn = () => {
     setShowRegister(false);
     setShowSignIn(true);
   };
-
-  return (
-    <div className="min-h-screen bg-white">
+  return <div className="min-h-screen bg-white">
       {/* Header */}
       <header className="bg-slate-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -329,7 +323,7 @@ const Index = () => {
                   M
                 </div>
                 <div>
-                  <p className="font-bold text-slate-800">Maria Nakanyala</p>
+                  <p className="font-bold text-slate-800">Booysen Kamati</p>
                   <p className="text-sm text-gray-600">Small Business Owner</p>
                 </div>
               </div>
@@ -514,8 +508,6 @@ const Index = () => {
       {/* Modals */}
       <SignInModal open={showSignIn} onOpenChange={setShowSignIn} onSwitchToRegister={handleSwitchToRegister} />
       <RegisterModal open={showRegister} onOpenChange={setShowRegister} onSwitchToSignIn={handleSwitchToSignIn} />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
