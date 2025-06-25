@@ -4,6 +4,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/components/ui/use-toast";
 
 interface SignInModalProps {
   open: boolean;
@@ -16,11 +18,40 @@ const SignInModal = ({ open, onOpenChange, onSwitchToRegister }: SignInModalProp
     email: "",
     password: ""
   });
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Sign in attempt:", loginData);
-    // Handle sign in logic here
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: loginData.email,
+        password: loginData.password,
+      });
+
+      if (error) {
+        toast({
+          title: "Sign In Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: "Successfully signed in!",
+        });
+        onOpenChange(false);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSwitchToRegister = () => {
@@ -47,6 +78,7 @@ const SignInModal = ({ open, onOpenChange, onSwitchToRegister }: SignInModalProp
               onChange={(e) => setLoginData(prev => ({ ...prev, email: e.target.value }))}
               className="w-full"
               required
+              disabled={isLoading}
             />
           </div>
           <div className="space-y-2">
@@ -59,6 +91,7 @@ const SignInModal = ({ open, onOpenChange, onSwitchToRegister }: SignInModalProp
               onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
               className="w-full"
               required
+              disabled={isLoading}
             />
           </div>
           <div className="text-sm text-blue-600 hover:underline cursor-pointer">
@@ -67,8 +100,9 @@ const SignInModal = ({ open, onOpenChange, onSwitchToRegister }: SignInModalProp
           <Button 
             type="submit" 
             className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+            disabled={isLoading}
           >
-            Sign In
+            {isLoading ? "Signing In..." : "Sign In"}
           </Button>
           <div className="text-center text-sm text-gray-600">
             Don't have an account?{" "}
@@ -76,6 +110,7 @@ const SignInModal = ({ open, onOpenChange, onSwitchToRegister }: SignInModalProp
               type="button"
               onClick={handleSwitchToRegister}
               className="text-blue-600 hover:underline"
+              disabled={isLoading}
             >
               Sign up
             </button>

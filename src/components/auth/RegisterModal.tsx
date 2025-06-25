@@ -4,6 +4,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/components/ui/use-toast";
 
 interface RegisterModalProps {
   open: boolean;
@@ -18,6 +20,7 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
     password: "",
     repeatPassword: ""
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -26,10 +29,63 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Registration attempt:", formData);
-    // Handle registration logic here
+    
+    if (formData.password !== formData.repeatPassword) {
+      toast({
+        title: "Password Error",
+        description: "Passwords do not match",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      toast({
+        title: "Password Error",
+        description: "Password must be at least 6 characters long",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            full_name: formData.fullName,
+          },
+          emailRedirectTo: `${window.location.origin}/`
+        }
+      });
+
+      if (error) {
+        toast({
+          title: "Sign Up Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: "Account created successfully! Please check your email to verify your account.",
+        });
+        onOpenChange(false);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSwitchToSignIn = () => {
@@ -56,6 +112,7 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
               onChange={(e) => handleInputChange("fullName", e.target.value)}
               className="w-full bg-gray-50"
               required
+              disabled={isLoading}
             />
           </div>
           <div className="space-y-2">
@@ -68,6 +125,7 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
               onChange={(e) => handleInputChange("email", e.target.value)}
               className="w-full bg-gray-50"
               required
+              disabled={isLoading}
             />
           </div>
           <div className="space-y-2">
@@ -80,6 +138,7 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
               onChange={(e) => handleInputChange("password", e.target.value)}
               className="w-full bg-gray-50"
               required
+              disabled={isLoading}
             />
           </div>
           <div className="space-y-2">
@@ -92,13 +151,15 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
               onChange={(e) => handleInputChange("repeatPassword", e.target.value)}
               className="w-full bg-gray-50"
               required
+              disabled={isLoading}
             />
           </div>
           <Button 
             type="submit" 
             className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+            disabled={isLoading}
           >
-            Sign up
+            {isLoading ? "Creating Account..." : "Sign up"}
           </Button>
           <div className="text-center text-sm text-gray-600 pb-2">
             Already have an account?{" "}
@@ -106,6 +167,7 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
               type="button"
               onClick={handleSwitchToSignIn}
               className="text-blue-600 hover:underline"
+              disabled={isLoading}
             >
               Log in
             </button>
