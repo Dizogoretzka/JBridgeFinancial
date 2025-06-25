@@ -1,30 +1,25 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Check, Shield, Clock, CreditCard, X } from "lucide-react";
-
 const Index = () => {
   const [loanAmount, setLoanAmount] = useState([5000]);
   const [loanTerm, setLoanTerm] = useState([12]);
-
-  const traditionalMonthlyPayment = Math.round((loanAmount[0] * 1.3) / loanTerm[0]);
+  const traditionalMonthlyPayment = Math.round(loanAmount[0] * 1.3 / loanTerm[0]);
   const traditionalTotalCost = Math.round(loanAmount[0] * 1.3);
   const bridgeMonthlyPayment = Math.round((loanAmount[0] + 249 * loanTerm[0]) / loanTerm[0]);
-  const bridgeTotalCost = loanAmount[0] + (249 * loanTerm[0]);
+  const bridgeTotalCost = loanAmount[0] + 249 * loanTerm[0];
   const totalSavings = traditionalTotalCost - bridgeTotalCost;
-
-  return (
-    <div className="min-h-screen bg-white">
+  return <div className="min-h-screen bg-white">
       {/* Header */}
       <header className="bg-slate-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center">
               <h1 className="text-xl font-medium">
-                <span className="font-bold">J Bridge</span> <span className="text-cyan-400 text-sm ml-2">Financial Services</span>
+                <span className="font-bold"></span> <span className="text-cyan-400 text-sm ml-2">Financial Services</span>
               </h1>
             </div>
             <div className="flex space-x-4">
@@ -154,14 +149,7 @@ const Index = () => {
                     <label className="text-white font-medium">Loan Amount</label>
                     <span className="text-xl font-bold text-cyan-400">₦{loanAmount[0].toLocaleString()}</span>
                   </div>
-                  <Slider
-                    value={loanAmount}
-                    onValueChange={setLoanAmount}
-                    max={50000}
-                    min={1000}
-                    step={1000}
-                    className="mb-2"
-                  />
+                  <Slider value={loanAmount} onValueChange={setLoanAmount} max={50000} min={1000} step={1000} className="mb-2" />
                   <div className="flex justify-between text-sm text-gray-400">
                     <span>₦1,000</span>
                     <span>₦50,000</span>
@@ -173,14 +161,7 @@ const Index = () => {
                     <label className="text-white font-medium">Loan Term (months)</label>
                     <span className="text-xl font-bold text-cyan-400">{loanTerm[0]} months</span>
                   </div>
-                  <Slider
-                    value={loanTerm}
-                    onValueChange={setLoanTerm}
-                    max={24}
-                    min={1}
-                    step={1}
-                    className="mb-2"
-                  />
+                  <Slider value={loanTerm} onValueChange={setLoanTerm} max={24} min={1} step={1} className="mb-2" />
                   <div className="flex justify-between text-sm text-gray-400">
                     <span>1 month</span>
                     <span>24 months</span>
@@ -315,9 +296,7 @@ const Index = () => {
                 "J Bridge transformed my business financing experience. With no interest charges, I was able to expand my shop without the stress of growing debt."
               </p>
               <div className="flex text-cyan-400 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i}>★</span>
-                ))}
+                {[...Array(5)].map((_, i) => <span key={i}>★</span>)}
               </div>
               <div className="flex items-center">
                 <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center text-white font-bold mr-3">
@@ -336,9 +315,7 @@ const Index = () => {
                 "I needed a quick loan for medical expenses. The subscription model made it affordable and the approval was fast. I'll never go back to traditional loans."
               </p>
               <div className="flex text-cyan-400 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i}>★</span>
-                ))}
+                {[...Array(5)].map((_, i) => <span key={i}>★</span>)}
               </div>
               <div className="flex items-center">
                 <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center text-white font-bold mr-3">
@@ -357,9 +334,7 @@ const Index = () => {
                 "The transparency of J Bridge is refreshing. I knew exactly what I was paying each month with no surprises or hidden fees."
               </p>
               <div className="flex text-cyan-400 mb-4">
-                {[...Array(4)].map((_, i) => (
-                  <span key={i}>★</span>
-                ))}
+                {[...Array(4)].map((_, i) => <span key={i}>★</span>)}
                 <span className="text-gray-300">★</span>
               </div>
               <div className="flex items-center">
@@ -458,7 +433,7 @@ const Index = () => {
             <Button size="lg" className="bg-white text-cyan-400 hover:bg-gray-100 font-medium px-8 py-3">
               Register Now
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-cyan-400 font-medium px-8 py-3">
+            <Button size="lg" variant="outline" className="border-white hover:bg-white font-medium px-8 py-3 text-cyan-400">
               Check Blacklist
             </Button>
           </div>
@@ -505,8 +480,6 @@ const Index = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
