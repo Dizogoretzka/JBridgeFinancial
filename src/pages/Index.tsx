@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,7 +6,6 @@ import { Slider } from "@/components/ui/slider";
 import { Check, Shield, Clock, CreditCard, X } from "lucide-react";
 import SignInModal from "@/components/auth/SignInModal";
 import RegisterModal from "@/components/auth/RegisterModal";
-
 const Index = () => {
   const [loanAmount, setLoanAmount] = useState([5000]);
   const [loanTerm, setLoanTerm] = useState([12]);
@@ -18,25 +16,20 @@ const Index = () => {
   const formatNAD = (amount: number) => {
     return `N$${amount.toLocaleString()}`;
   };
-
   const traditionalMonthlyPayment = Math.round(loanAmount[0] * 1.3 / loanTerm[0]);
   const traditionalTotalCost = Math.round(loanAmount[0] * 1.3);
   const bridgeMonthlyPayment = Math.round((loanAmount[0] + 249 * loanTerm[0]) / loanTerm[0]);
   const bridgeTotalCost = loanAmount[0] + 249 * loanTerm[0];
   const totalSavings = traditionalTotalCost - bridgeTotalCost;
-
   const handleSwitchToRegister = () => {
     setShowSignIn(false);
     setShowRegister(true);
   };
-
   const handleSwitchToSignIn = () => {
     setShowRegister(false);
     setShowSignIn(true);
   };
-
-  return (
-    <div className="min-h-screen bg-white">
+  return <div className="min-h-screen bg-white">
       {/* Header */}
       <header className="bg-slate-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -48,17 +41,10 @@ const Index = () => {
               </h1>
             </div>
             <div className="flex space-x-4">
-              <Button 
-                variant="outline" 
-                className="bg-transparent border-white text-white hover:bg-white hover:text-slate-800"
-                onClick={() => setShowSignIn(true)}
-              >
+              <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-slate-800" onClick={() => setShowSignIn(true)}>
                 Sign In
               </Button>
-              <Button 
-                className="bg-cyan-400 hover:bg-cyan-500 text-slate-800 font-medium"
-                onClick={() => setShowRegister(true)}
-              >
+              <Button className="bg-cyan-400 hover:bg-cyan-500 text-slate-800 font-medium" onClick={() => setShowRegister(true)}>
                 Register
               </Button>
             </div>
@@ -80,10 +66,7 @@ const Index = () => {
               We're replacing traditional 30% monthly interest loans with a transparent, fair subscription approach.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                className="bg-cyan-400 hover:bg-cyan-500 text-slate-800 font-medium px-6 py-3"
-                onClick={() => setShowRegister(true)}
-              >
+              <Button className="bg-cyan-400 hover:bg-cyan-500 text-slate-800 font-medium px-6 py-3" onClick={() => setShowRegister(true)}>
                 Get Started →
               </Button>
               <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-slate-800 px-6 py-3">
@@ -465,11 +448,7 @@ const Index = () => {
             Join thousands of customers who trust J Bridge for their financial needs—without the burden of interest charges.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg" 
-              className="bg-white text-cyan-400 hover:bg-gray-100 font-medium px-8 py-3"
-              onClick={() => setShowRegister(true)}
-            >
+            <Button size="lg" className="bg-white text-cyan-400 hover:bg-gray-100 font-medium px-8 py-3" onClick={() => setShowRegister(true)}>
               Register Now
             </Button>
             <Button size="lg" variant="outline" className="border-white hover:bg-white font-medium px-8 py-3 text-cyan-400">
@@ -517,32 +496,15 @@ const Index = () => {
             <p className="text-gray-300">© 2025 J Bridge Financial Services. All rights reserved.</p>
             <div className="flex items-center space-x-4">
               <p className="text-gray-300">Developed by</p>
-              <a 
-                href="https://www.aisod.tech" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-cyan-400 hover:text-cyan-300 font-medium"
-              >
-                aisod
-              </a>
+              <a href="https://www.aisod.tech" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:text-cyan-300 font-medium">AISOD</a>
             </div>
           </div>
         </div>
       </footer>
 
       {/* Modals */}
-      <SignInModal 
-        open={showSignIn} 
-        onOpenChange={setShowSignIn}
-        onSwitchToRegister={handleSwitchToRegister}
-      />
-      <RegisterModal 
-        open={showRegister} 
-        onOpenChange={setShowRegister}
-        onSwitchToSignIn={handleSwitchToSignIn}
-      />
-    </div>
-  );
+      <SignInModal open={showSignIn} onOpenChange={setShowSignIn} onSwitchToRegister={handleSwitchToRegister} />
+      <RegisterModal open={showRegister} onOpenChange={setShowRegister} onSwitchToSignIn={handleSwitchToSignIn} />
+    </div>;
 };
-
 export default Index;
