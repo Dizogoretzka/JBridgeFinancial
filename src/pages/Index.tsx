@@ -342,7 +342,7 @@ const Index = () => {
                   T
                 </div>
                 <div>
-                  <p className="font-bold text-slate-800">Thomas Shilongo</p>
+                  <p className="font-bold text-slate-800">Dominicus Iipinge</p>
                   <p className="text-sm text-gray-600">Teacher</p>
                 </div>
               </div>
