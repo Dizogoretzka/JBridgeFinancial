@@ -14,7 +14,6 @@ interface RegisterModalProps {
 const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalProps) => {
   const [formData, setFormData] = useState({
     fullName: "",
-    cellPhone: "",
     email: "",
     password: "",
     repeatPassword: ""
@@ -40,13 +39,13 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="w-full max-w-md mx-4 sm:mx-auto max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-center text-xl font-semibold text-slate-800">
             Create your account
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 px-2">
           <div className="space-y-2">
             <Label htmlFor="fullName">Full name</Label>
             <Input
@@ -60,18 +59,6 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="cellPhone">Cell phone number *</Label>
-            <Input
-              id="cellPhone"
-              type="tel"
-              placeholder="Enter your cell phone number"
-              value={formData.cellPhone}
-              onChange={(e) => handleInputChange("cellPhone", e.target.value)}
-              className="w-full bg-gray-50"
-              required
-            />
-          </div>
-          <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
@@ -80,6 +67,7 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
               value={formData.email}
               onChange={(e) => handleInputChange("email", e.target.value)}
               className="w-full bg-gray-50"
+              required
             />
           </div>
           <div className="space-y-2">
@@ -112,7 +100,7 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
           >
             Sign up
           </Button>
-          <div className="text-center text-sm text-gray-600">
+          <div className="text-center text-sm text-gray-600 pb-2">
             Already have an account?{" "}
             <button
               type="button"

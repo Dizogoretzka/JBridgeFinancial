@@ -13,7 +13,7 @@ interface SignInModalProps {
 
 const SignInModal = ({ open, onOpenChange, onSwitchToRegister }: SignInModalProps) => {
   const [loginData, setLoginData] = useState({
-    identifier: "", // Can be email or cellphone
+    email: "",
     password: ""
   });
 
@@ -30,21 +30,21 @@ const SignInModal = ({ open, onOpenChange, onSwitchToRegister }: SignInModalProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="w-full max-w-md mx-4 sm:mx-auto">
         <DialogHeader>
           <DialogTitle className="text-center text-xl font-semibold text-slate-800">
             Welcome back
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 px-2">
           <div className="space-y-2">
-            <Label htmlFor="identifier">Cell phone number or email</Label>
+            <Label htmlFor="email">Email</Label>
             <Input
-              id="identifier"
-              type="text"
-              placeholder="Cell phone number or email"
-              value={loginData.identifier}
-              onChange={(e) => setLoginData(prev => ({ ...prev, identifier: e.target.value }))}
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              value={loginData.email}
+              onChange={(e) => setLoginData(prev => ({ ...prev, email: e.target.value }))}
               className="w-full"
               required
             />
