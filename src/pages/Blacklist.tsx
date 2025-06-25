@@ -22,7 +22,7 @@ const Blacklist = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-4">
               <div className="flex items-center">
-                <h1 className="text-xl font-medium">
+                <h1 className="text-xl font-medium cursor-pointer" onClick={() => navigate("/")}>
                   <span className="font-bold">J Bridge</span> 
                   <span className="text-cyan-400 text-sm ml-2">Financial Services</span>
                 </h1>
@@ -217,6 +217,7 @@ const Blacklist = () => {
               <div className="space-y-2 text-gray-300">
                 <p>📞 +264 81 219 1482</p>
                 <p>✉️ info@jbridgefinance.online</p>
+                <p>📍 123 Independence Avenue, Windhoek</p>
               </div>
             </div>
             
@@ -225,17 +226,17 @@ const Blacklist = () => {
               <div className="space-y-2 text-gray-300">
                 <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/")}>Home</p>
                 <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/about")}>About Us</p>
+                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/contact")}>Contact</p>
+                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/careers")}>Careers</p>
                 <p className="hover:text-cyan-400 cursor-pointer">Blacklist</p>
-                <p className="hover:text-cyan-400 cursor-pointer">Sign In</p>
-                <p className="hover:text-cyan-400 cursor-pointer">Register</p>
               </div>
             </div>
             
             <div>
               <h4 className="text-lg font-semibold mb-4">Legal</h4>
               <div className="space-y-2 text-gray-300">
-                <p className="hover:text-cyan-400 cursor-pointer">Terms of Service</p>
-                <p className="hover:text-cyan-400 cursor-pointer">Privacy Policy</p>
+                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/terms-of-service")}>Terms of Service</p>
+                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/privacy-policy")}>Privacy Policy</p>
                 <p className="hover:text-cyan-400 cursor-pointer">Loan Agreement</p>
               </div>
             </div>

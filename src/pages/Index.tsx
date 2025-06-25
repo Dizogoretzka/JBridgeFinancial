@@ -469,33 +469,34 @@ const Index = () => {
       {/* Footer */}
       <footer className="bg-slate-800 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
               <h3 className="text-xl font-bold mb-4">J Bridge</h3>
               <p className="text-gray-300 mb-4">Interest-free loans with a subscription model. Reg. No: CC/2019/02711</p>
               <div className="space-y-2 text-gray-300">
                 <p>Contact Us: info@jbridgefinance.online</p>
                 <p>Phone: +264 81 219 1482</p>
+                <p>Address: 123 Independence Avenue, Windhoek</p>
               </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-8">
-              <div>
-                <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-                <div className="space-y-2 text-gray-300">
-                  <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/about")}>About Us</p>
-                  <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/blacklist")}>Blacklist</p>
-                  <p className="hover:text-cyan-400 cursor-pointer" onClick={() => setShowSignIn(true)}>Sign In</p>
-                </div>
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
+              <div className="space-y-2 text-gray-300">
+                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/about")}>About Us</p>
+                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/contact")}>Contact</p>
+                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/careers")}>Careers</p>
+                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/blacklist")}>Blacklist</p>
+                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => setShowSignIn(true)}>Sign In</p>
               </div>
-              
-              <div>
-                <h4 className="text-lg font-semibold mb-4">Legal</h4>
-                <div className="space-y-2 text-gray-300">
-                  <p className="hover:text-cyan-400 cursor-pointer" onClick={() => setShowRegister(true)}>Register</p>
-                  <p className="hover:text-cyan-400 cursor-pointer">Privacy Policy</p>
-                  <p className="hover:text-cyan-400 cursor-pointer">Terms of Service</p>
-                </div>
+            </div>
+            
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Legal</h4>
+              <div className="space-y-2 text-gray-300">
+                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/privacy-policy")}>Privacy Policy</p>
+                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/terms-of-service")}>Terms of Service</p>
+                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => setShowRegister(true)}>Register</p>
               </div>
             </div>
           </div>

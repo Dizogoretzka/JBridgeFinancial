@@ -1,9 +1,11 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Shield, Users, CheckCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const About = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -11,17 +13,14 @@ const About = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center">
-              <h1 className="text-xl font-medium">
+              <h1 className="text-xl font-medium cursor-pointer" onClick={() => navigate("/")}>
                 <span className="font-bold">J Bridge</span> 
                 <span className="text-cyan-400 text-sm ml-2">Financial Services</span>
               </h1>
             </div>
             <div className="flex space-x-4">
-              <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-slate-800">
-                Sign In
-              </Button>
-              <Button className="bg-cyan-400 hover:bg-cyan-500 text-slate-800 font-medium">
-                Register
+              <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-slate-800" onClick={() => navigate("/")}>
+                Back to Home
               </Button>
             </div>
           </div>
@@ -218,25 +217,26 @@ const About = () => {
               <div className="space-y-2 text-gray-300">
                 <p>📞 +264 81 219 1482</p>
                 <p>✉️ info@jbridgefinance.online</p>
+                <p>📍 123 Independence Avenue, Windhoek</p>
               </div>
             </div>
             
             <div>
               <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
               <div className="space-y-2 text-gray-300">
-                <p className="hover:text-cyan-400 cursor-pointer">Home</p>
-                <p className="hover:text-cyan-400 cursor-pointer">About Us</p>
-                <p className="hover:text-cyan-400 cursor-pointer">Blacklist</p>
-                <p className="hover:text-cyan-400 cursor-pointer">Sign In</p>
-                <p className="hover:text-cyan-400 cursor-pointer">Register</p>
+                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/")}>Home</p>
+                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/about")}>About Us</p>
+                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/contact")}>Contact</p>
+                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/careers")}>Careers</p>
+                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/blacklist")}>Blacklist</p>
               </div>
             </div>
             
             <div>
               <h4 className="text-lg font-semibold mb-4">Legal</h4>
               <div className="space-y-2 text-gray-300">
-                <p className="hover:text-cyan-400 cursor-pointer">Terms of Service</p>
-                <p className="hover:text-cyan-400 cursor-pointer">Privacy Policy</p>
+                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/terms-of-service")}>Terms of Service</p>
+                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/privacy-policy")}>Privacy Policy</p>
                 <p className="hover:text-cyan-400 cursor-pointer">Loan Agreement</p>
               </div>
             </div>
