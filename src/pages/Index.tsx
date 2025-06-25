@@ -1,32 +1,64 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Check, Shield, Clock, CreditCard, X } from "lucide-react";
+import SignInModal from "@/components/auth/SignInModal";
+import RegisterModal from "@/components/auth/RegisterModal";
+
 const Index = () => {
   const [loanAmount, setLoanAmount] = useState([5000]);
   const [loanTerm, setLoanTerm] = useState([12]);
+  const [showSignIn, setShowSignIn] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
+
+  // Format currency as Namibian Dollar (NAD)
+  const formatNAD = (amount: number) => {
+    return `N$${amount.toLocaleString()}`;
+  };
+
   const traditionalMonthlyPayment = Math.round(loanAmount[0] * 1.3 / loanTerm[0]);
   const traditionalTotalCost = Math.round(loanAmount[0] * 1.3);
   const bridgeMonthlyPayment = Math.round((loanAmount[0] + 249 * loanTerm[0]) / loanTerm[0]);
   const bridgeTotalCost = loanAmount[0] + 249 * loanTerm[0];
   const totalSavings = traditionalTotalCost - bridgeTotalCost;
-  return <div className="min-h-screen bg-white">
+
+  const handleSwitchToRegister = () => {
+    setShowSignIn(false);
+    setShowRegister(true);
+  };
+
+  const handleSwitchToSignIn = () => {
+    setShowRegister(false);
+    setShowSignIn(true);
+  };
+
+  return (
+    <div className="min-h-screen bg-white">
       {/* Header */}
       <header className="bg-slate-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center">
               <h1 className="text-xl font-medium">
-                <span className="font-bold"></span> <span className="text-cyan-400 text-sm ml-2">Financial Services</span>
+                <span className="font-bold">J Bridge</span> 
+                <span className="text-cyan-400 text-sm ml-2">Financial Services</span>
               </h1>
             </div>
             <div className="flex space-x-4">
-              <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-slate-800">
+              <Button 
+                variant="outline" 
+                className="bg-transparent border-white text-white hover:bg-white hover:text-slate-800"
+                onClick={() => setShowSignIn(true)}
+              >
                 Sign In
               </Button>
-              <Button className="bg-cyan-400 hover:bg-cyan-500 text-slate-800 font-medium">
+              <Button 
+                className="bg-cyan-400 hover:bg-cyan-500 text-slate-800 font-medium"
+                onClick={() => setShowRegister(true)}
+              >
                 Register
               </Button>
             </div>
@@ -48,7 +80,10 @@ const Index = () => {
               We're replacing traditional 30% monthly interest loans with a transparent, fair subscription approach.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button className="bg-cyan-400 hover:bg-cyan-500 text-slate-800 font-medium px-6 py-3">
+              <Button 
+                className="bg-cyan-400 hover:bg-cyan-500 text-slate-800 font-medium px-6 py-3"
+                onClick={() => setShowRegister(true)}
+              >
                 Get Started →
               </Button>
               <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-slate-800 px-6 py-3">
@@ -147,12 +182,12 @@ const Index = () => {
                 <div>
                   <div className="flex justify-between items-center mb-4">
                     <label className="text-white font-medium">Loan Amount</label>
-                    <span className="text-xl font-bold text-cyan-400">₦{loanAmount[0].toLocaleString()}</span>
+                    <span className="text-xl font-bold text-cyan-400">{formatNAD(loanAmount[0])}</span>
                   </div>
                   <Slider value={loanAmount} onValueChange={setLoanAmount} max={50000} min={1000} step={1000} className="mb-2" />
                   <div className="flex justify-between text-sm text-gray-400">
-                    <span>₦1,000</span>
-                    <span>₦50,000</span>
+                    <span>N$1,000</span>
+                    <span>N$50,000</span>
                   </div>
                 </div>
 
@@ -176,13 +211,13 @@ const Index = () => {
                       <div className="space-y-3">
                         <div className="flex justify-between">
                           <span className="text-slate-600">Monthly Payment:</span>
-                          <span className="font-bold text-red-600">₦{traditionalMonthlyPayment.toLocaleString()}</span>
+                          <span className="font-bold text-red-600">{formatNAD(traditionalMonthlyPayment)}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-slate-600">Total Cost:</span>
-                          <span className="font-bold text-red-600">₦{traditionalTotalCost.toLocaleString()}</span>
+                          <span className="font-bold text-red-600">{formatNAD(traditionalTotalCost)}</span>
                         </div>
-                        <p className="text-xs text-red-500">💡 Interest adds ₦{(traditionalTotalCost - loanAmount[0]).toLocaleString()} to your loan</p>
+                        <p className="text-xs text-red-500">💡 Interest adds {formatNAD(traditionalTotalCost - loanAmount[0])} to your loan</p>
                       </div>
                     </CardContent>
                   </Card>
@@ -194,13 +229,13 @@ const Index = () => {
                       <div className="space-y-3">
                         <div className="flex justify-between">
                           <span className="text-slate-600">Monthly Payment:</span>
-                          <span className="font-bold text-green-600">₦{bridgeMonthlyPayment.toLocaleString()}</span>
+                          <span className="font-bold text-green-600">{formatNAD(bridgeMonthlyPayment)}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-slate-600">Total Cost:</span>
-                          <span className="font-bold text-green-600">₦{bridgeTotalCost.toLocaleString()}</span>
+                          <span className="font-bold text-green-600">{formatNAD(bridgeTotalCost)}</span>
                         </div>
-                        <p className="text-xs text-green-500">💡 Subscription is just ₦249 per month</p>
+                        <p className="text-xs text-green-500">💡 Subscription is just N$249 per month</p>
                       </div>
                     </CardContent>
                   </Card>
@@ -208,7 +243,7 @@ const Index = () => {
 
                 <div className="text-center mt-8 p-6 bg-cyan-50 rounded-lg border border-cyan-200">
                   <h4 className="text-2xl font-bold text-slate-800 mb-2">Your Total Savings</h4>
-                  <p className="text-4xl font-bold text-cyan-500 mb-2">₦{totalSavings.toLocaleString()}</p>
+                  <p className="text-4xl font-bold text-cyan-500 mb-2">{formatNAD(totalSavings)}</p>
                   <p className="text-slate-600">By choosing our subscription model over traditional interest-based loans</p>
                 </div>
               </div>
@@ -430,7 +465,11 @@ const Index = () => {
             Join thousands of customers who trust J Bridge for their financial needs—without the burden of interest charges.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-cyan-400 hover:bg-gray-100 font-medium px-8 py-3">
+            <Button 
+              size="lg" 
+              className="bg-white text-cyan-400 hover:bg-gray-100 font-medium px-8 py-3"
+              onClick={() => setShowRegister(true)}
+            >
               Register Now
             </Button>
             <Button size="lg" variant="outline" className="border-white hover:bg-white font-medium px-8 py-3 text-cyan-400">
@@ -457,18 +496,18 @@ const Index = () => {
               <div>
                 <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
                 <div className="space-y-2 text-gray-300">
-                  <p>About Us</p>
-                  <p>Blacklist</p>
-                  <p>Sign In</p>
+                  <p className="hover:text-cyan-400 cursor-pointer">About Us</p>
+                  <p className="hover:text-cyan-400 cursor-pointer">Blacklist</p>
+                  <p className="hover:text-cyan-400 cursor-pointer" onClick={() => setShowSignIn(true)}>Sign In</p>
                 </div>
               </div>
               
               <div>
-                <h4 className="text-lg font-semibold mb-4"></h4>
+                <h4 className="text-lg font-semibold mb-4">Legal</h4>
                 <div className="space-y-2 text-gray-300">
-                  <p>Register</p>
-                  <p>Privacy Policy</p>
-                  <p>Terms of Service</p>
+                  <p className="hover:text-cyan-400 cursor-pointer" onClick={() => setShowRegister(true)}>Register</p>
+                  <p className="hover:text-cyan-400 cursor-pointer">Privacy Policy</p>
+                  <p className="hover:text-cyan-400 cursor-pointer">Terms of Service</p>
                 </div>
               </div>
             </div>
@@ -476,10 +515,34 @@ const Index = () => {
           
           <div className="border-t border-gray-700 mt-8 pt-8 flex justify-between items-center">
             <p className="text-gray-300">© 2025 J Bridge Financial Services. All rights reserved.</p>
-            <p className="text-gray-300">Developed by <span className="text-cyan-400">AISOD</span></p>
+            <div className="flex items-center space-x-4">
+              <p className="text-gray-300">Developed by</p>
+              <a 
+                href="https://www.aisod.tech" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-cyan-400 hover:text-cyan-300 font-medium"
+              >
+                aisod
+              </a>
+            </div>
           </div>
         </div>
       </footer>
-    </div>;
+
+      {/* Modals */}
+      <SignInModal 
+        open={showSignIn} 
+        onOpenChange={setShowSignIn}
+        onSwitchToRegister={handleSwitchToRegister}
+      />
+      <RegisterModal 
+        open={showRegister} 
+        onOpenChange={setShowRegister}
+        onSwitchToSignIn={handleSwitchToSignIn}
+      />
+    </div>
+  );
 };
+
 export default Index;
