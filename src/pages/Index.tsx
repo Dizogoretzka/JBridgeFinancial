@@ -4,38 +4,46 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Check, Shield, Clock, CreditCard, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import SignInModal from "@/components/auth/SignInModal";
 import RegisterModal from "@/components/auth/RegisterModal";
+
 const Index = () => {
   const [loanAmount, setLoanAmount] = useState([5000]);
   const [loanTerm, setLoanTerm] = useState([12]);
   const [showSignIn, setShowSignIn] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+  const navigate = useNavigate();
 
   // Format currency as Namibian Dollar (NAD)
   const formatNAD = (amount: number) => {
     return `N$${amount.toLocaleString()}`;
   };
+
   const traditionalMonthlyPayment = Math.round(loanAmount[0] * 1.3 / loanTerm[0]);
   const traditionalTotalCost = Math.round(loanAmount[0] * 1.3);
   const bridgeMonthlyPayment = Math.round((loanAmount[0] + 249 * loanTerm[0]) / loanTerm[0]);
   const bridgeTotalCost = loanAmount[0] + 249 * loanTerm[0];
   const totalSavings = traditionalTotalCost - bridgeTotalCost;
+
   const handleSwitchToRegister = () => {
     setShowSignIn(false);
     setShowRegister(true);
   };
+
   const handleSwitchToSignIn = () => {
     setShowRegister(false);
     setShowSignIn(true);
   };
-  return <div className="min-h-screen bg-white">
+
+  return (
+    <div className="min-h-screen bg-white">
       {/* Header */}
       <header className="bg-slate-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center">
-              <h1 className="text-xl font-medium">
+              <h1 className="text-xl font-medium cursor-pointer" onClick={() => navigate("/")}>
                 <span className="font-bold">J Bridge</span> 
                 <span className="text-cyan-400 text-sm ml-2">Financial Services</span>
               </h1>
@@ -69,7 +77,7 @@ const Index = () => {
               <Button className="bg-cyan-400 hover:bg-cyan-500 text-slate-800 font-medium px-6 py-3" onClick={() => setShowRegister(true)}>
                 Get Started →
               </Button>
-              <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-slate-800 px-6 py-3">
+              <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-slate-800 px-6 py-3" onClick={() => navigate("/about")}>
                 Learn More
               </Button>
             </div>
@@ -451,7 +459,7 @@ const Index = () => {
             <Button size="lg" className="bg-white text-cyan-400 hover:bg-gray-100 font-medium px-8 py-3" onClick={() => setShowRegister(true)}>
               Register Now
             </Button>
-            <Button size="lg" variant="outline" className="border-white hover:bg-white font-medium px-8 py-3 text-cyan-400">
+            <Button size="lg" variant="outline" className="border-white hover:bg-white font-medium px-8 py-3 text-cyan-400" onClick={() => navigate("/blacklist")}>
               Check Blacklist
             </Button>
           </div>
@@ -475,8 +483,8 @@ const Index = () => {
               <div>
                 <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
                 <div className="space-y-2 text-gray-300">
-                  <p className="hover:text-cyan-400 cursor-pointer">About Us</p>
-                  <p className="hover:text-cyan-400 cursor-pointer">Blacklist</p>
+                  <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/about")}>About Us</p>
+                  <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/blacklist")}>Blacklist</p>
                   <p className="hover:text-cyan-400 cursor-pointer" onClick={() => setShowSignIn(true)}>Sign In</p>
                 </div>
               </div>
@@ -505,6 +513,8 @@ const Index = () => {
       {/* Modals */}
       <SignInModal open={showSignIn} onOpenChange={setShowSignIn} onSwitchToRegister={handleSwitchToRegister} />
       <RegisterModal open={showRegister} onOpenChange={setShowRegister} onSwitchToSignIn={handleSwitchToSignIn} />
-    </div>;
+    </div>
+  );
 };
+
 export default Index;

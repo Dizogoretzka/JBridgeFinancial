@@ -12,12 +12,14 @@ interface SignInModalProps {
 }
 
 const SignInModal = ({ open, onOpenChange, onSwitchToRegister }: SignInModalProps) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [loginData, setLoginData] = useState({
+    identifier: "", // Can be email or cellphone
+    password: ""
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Sign in attempt:", { email, password });
+    console.log("Sign in attempt:", loginData);
     // Handle sign in logic here
   };
 
@@ -36,14 +38,15 @@ const SignInModal = ({ open, onOpenChange, onSwitchToRegister }: SignInModalProp
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Cell phone number or email</Label>
+            <Label htmlFor="identifier">Cell phone number or email</Label>
             <Input
-              id="email"
+              id="identifier"
               type="text"
               placeholder="Cell phone number or email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={loginData.identifier}
+              onChange={(e) => setLoginData(prev => ({ ...prev, identifier: e.target.value }))}
               className="w-full"
+              required
             />
           </div>
           <div className="space-y-2">
@@ -52,9 +55,10 @@ const SignInModal = ({ open, onOpenChange, onSwitchToRegister }: SignInModalProp
               id="password"
               type="password"
               placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={loginData.password}
+              onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
               className="w-full"
+              required
             />
           </div>
           <div className="text-sm text-blue-600 hover:underline cursor-pointer">

@@ -14,8 +14,8 @@ interface RegisterModalProps {
 const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalProps) => {
   const [formData, setFormData] = useState({
     fullName: "",
-    email: "",
     cellPhone: "",
+    email: "",
     password: "",
     repeatPassword: ""
   });
@@ -56,6 +56,19 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
               value={formData.fullName}
               onChange={(e) => handleInputChange("fullName", e.target.value)}
               className="w-full bg-gray-50"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="cellPhone">Cell phone number *</Label>
+            <Input
+              id="cellPhone"
+              type="tel"
+              placeholder="Enter your cell phone number"
+              value={formData.cellPhone}
+              onChange={(e) => handleInputChange("cellPhone", e.target.value)}
+              className="w-full bg-gray-50"
+              required
             />
           </div>
           <div className="space-y-2">
@@ -70,17 +83,6 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="cellPhone">Cell phone number</Label>
-            <Input
-              id="cellPhone"
-              type="tel"
-              placeholder="Enter your cell phone number"
-              value={formData.cellPhone}
-              onChange={(e) => handleInputChange("cellPhone", e.target.value)}
-              className="w-full bg-gray-50"
-            />
-          </div>
-          <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
@@ -89,6 +91,7 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
               value={formData.password}
               onChange={(e) => handleInputChange("password", e.target.value)}
               className="w-full bg-gray-50"
+              required
             />
           </div>
           <div className="space-y-2">
@@ -100,6 +103,7 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
               value={formData.repeatPassword}
               onChange={(e) => handleInputChange("repeatPassword", e.target.value)}
               className="w-full bg-gray-50"
+              required
             />
           </div>
           <Button 
