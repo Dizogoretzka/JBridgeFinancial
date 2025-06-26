@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface SignInModalProps {
   open: boolean;
@@ -19,6 +20,7 @@ const SignInModal = ({ open, onOpenChange, onSwitchToRegister }: SignInModalProp
     password: ""
   });
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,9 +41,10 @@ const SignInModal = ({ open, onOpenChange, onSwitchToRegister }: SignInModalProp
       } else {
         toast({
           title: "Success",
-          description: "Successfully signed in!",
+          description: "Successfully signed in! Redirecting to dashboard...",
         });
         onOpenChange(false);
+        navigate('/dashboard');
       }
     } catch (error) {
       toast({

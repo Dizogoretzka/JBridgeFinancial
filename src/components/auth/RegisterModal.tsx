@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface RegisterModalProps {
   open: boolean;
@@ -21,6 +22,7 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
     repeatPassword: ""
   });
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -60,7 +62,7 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
           data: {
             full_name: formData.fullName,
           },
-          emailRedirectTo: `${window.location.origin}/`
+          emailRedirectTo: `${window.location.origin}/dashboard`
         }
       });
 
@@ -73,9 +75,10 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
       } else {
         toast({
           title: "Success",
-          description: "Account created successfully! Please check your email to verify your account.",
+          description: "Account created successfully! Redirecting to dashboard...",
         });
         onOpenChange(false);
+        navigate('/dashboard');
       }
     } catch (error) {
       toast({
