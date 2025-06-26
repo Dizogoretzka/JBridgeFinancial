@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
@@ -7,24 +6,33 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useAuth } from "@/hooks/useAuth";
 import { Home, FileText, User, CreditCard, TrendingUp, LogOut } from "lucide-react";
 import { useNavigate, NavLink, useLocation } from "react-router-dom";
-
-const menuItems = [
-  { title: "Dashboard", url: "/dashboard", icon: Home },
-  { title: "Documents", url: "/dashboard/documents", icon: FileText },
-  { title: "Profile", url: "/dashboard/profile", icon: User },
-  { title: "Loans", url: "/dashboard/loans", icon: CreditCard },
-  { title: "Credit Score", url: "/dashboard/credit", icon: TrendingUp },
-];
-
+const menuItems = [{
+  title: "Dashboard",
+  url: "/dashboard",
+  icon: Home
+}, {
+  title: "Documents",
+  url: "/dashboard/documents",
+  icon: FileText
+}, {
+  title: "Profile",
+  url: "/dashboard/profile",
+  icon: User
+}, {
+  title: "Loans",
+  url: "/dashboard/loans",
+  icon: CreditCard
+}, {
+  title: "Credit Score",
+  url: "/dashboard/credit",
+  icon: TrendingUp
+}];
 export const DashboardSidebar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
-
   const isActive = (path: string) => currentPath === path;
-
-  return (
-    <Sidebar className="bg-blue-600 text-white border-r-0">
-      <SidebarHeader className="p-4">
+  return <Sidebar className="bg-blue-600 text-white border-r-0">
+      <SidebarHeader className="p-4 bg-sky-950">
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-white rounded flex items-center justify-center">
             <span className="text-blue-600 font-bold text-sm">JBF</span>
@@ -33,62 +41,47 @@ export const DashboardSidebar = () => {
         </div>
       </SidebarHeader>
       
-      <SidebarContent>
+      <SidebarContent className="bg-sky-950">
         <SidebarGroup>
           <SidebarGroupLabel className="text-blue-100">Main Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
+              {menuItems.map(item => <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <NavLink 
-                      to={item.url} 
-                      className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${
-                        isActive(item.url) 
-                          ? 'bg-blue-700 text-white' 
-                          : 'text-blue-100 hover:bg-blue-700 hover:text-white'
-                      }`}
-                    >
+                    <NavLink to={item.url} className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${isActive(item.url) ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white'}`}>
                       <item.icon className="h-5 w-5" />
                       <span>{item.title}</span>
                     </NavLink>
                   </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+                </SidebarMenuItem>)}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-    </Sidebar>
-  );
+    </Sidebar>;
 };
-
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
-
-export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
-  const { user, signOut } = useAuth();
+export const DashboardLayout = ({
+  children
+}: DashboardLayoutProps) => {
+  const {
+    user,
+    signOut
+  } = useAuth();
   const navigate = useNavigate();
-
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
   };
-
   const getUserInitials = () => {
     if (user?.user_metadata?.full_name) {
-      return user.user_metadata.full_name
-        .split(' ')
-        .map((name: string) => name[0])
-        .join('')
-        .toUpperCase();
+      return user.user_metadata.full_name.split(' ').map((name: string) => name[0]).join('').toUpperCase();
     }
     return user?.email?.[0]?.toUpperCase() || 'U';
   };
-
-  return (
-    <SidebarProvider>
+  return <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50">
         <DashboardSidebar />
         
@@ -139,6 +132,5 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </main>
         </div>
       </div>
-    </SidebarProvider>
-  );
+    </SidebarProvider>;
 };
