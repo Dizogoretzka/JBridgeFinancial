@@ -1,52 +1,74 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Slider } from "@/components/ui/slider";
-import { Check, Shield, Clock, CreditCard, X } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Shield, TrendingUp, Users, Clock, CheckCircle, Star, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import SignInModal from "@/components/auth/SignInModal";
 import RegisterModal from "@/components/auth/RegisterModal";
+import { EmployeeSignInModal } from "@/components/auth/EmployeeSignInModal";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+
 const Index = () => {
-  const [loanAmount, setLoanAmount] = useState([5000]);
-  const [loanTerm, setLoanTerm] = useState([12]);
+  const [email, setEmail] = useState("");
   const [showSignIn, setShowSignIn] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+  const [showEmployeeSignIn, setShowEmployeeSignIn] = useState(false);
   const navigate = useNavigate();
 
-  // Format currency as Namibian Dollar (NAD)
-  const formatNAD = (amount: number) => {
-    return `N$${amount.toLocaleString()}`;
+  const handleWaitingListSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Email submitted:", email);
+    setEmail("");
   };
-  const traditionalMonthlyPayment = Math.round(loanAmount[0] * 1.3 / loanTerm[0]);
-  const traditionalTotalCost = Math.round(loanAmount[0] * 1.3);
-  const bridgeMonthlyPayment = Math.round((loanAmount[0] + 249 * loanTerm[0]) / loanTerm[0]);
-  const bridgeTotalCost = loanAmount[0] + 249 * loanTerm[0];
-  const totalSavings = traditionalTotalCost - bridgeTotalCost;
-  const handleSwitchToRegister = () => {
-    setShowSignIn(false);
-    setShowRegister(true);
-  };
-  const handleSwitchToSignIn = () => {
-    setShowRegister(false);
-    setShowSignIn(true);
-  };
-  return <div className="min-h-screen bg-white">
+
+  return (
+    <div className="min-h-screen bg-white">
       {/* Header */}
       <header className="bg-slate-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <div className="flex items-center">
-              <h1 className="text-xl font-medium cursor-pointer" onClick={() => navigate("/")}>
+            <div className="flex items-center space-x-3">
+              <img 
+                src="/lovable-uploads/91f08756-7121-4d45-8a4e-ad048eb44dc0.png" 
+                alt="J Bridge Logo" 
+                className="w-8 h-8"
+              />
+              <h1 className="text-xl font-medium">
                 <span className="font-bold">J Bridge</span> 
                 <span className="text-cyan-400 text-sm ml-2">Financial Services</span>
               </h1>
             </div>
+            <nav className="hidden md:flex space-x-8">
+              <a href="#how-it-works" className="hover:text-cyan-400 transition-colors">How it Works</a>
+              <a href="#pricing" className="hover:text-cyan-400 transition-colors">Pricing</a>
+              <a href="#about" className="hover:text-cyan-400 transition-colors">About</a>
+              <button onClick={() => navigate("/blacklist")} className="hover:text-cyan-400 transition-colors">Blacklist</button>
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center space-x-1 hover:text-cyan-400 transition-colors">
+                  <span>Employee Portal</span>
+                  <ChevronDown className="h-4 w-4" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => setShowEmployeeSignIn(true)}>
+                    Employee Sign In
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </nav>
             <div className="flex space-x-4">
-              <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-slate-800" onClick={() => setShowSignIn(true)}>
+              <Button 
+                variant="outline" 
+                className="bg-transparent border-white text-white hover:bg-white hover:text-slate-800"
+                onClick={() => setShowSignIn(true)}
+              >
                 Sign In
               </Button>
-              <Button className="bg-cyan-400 hover:bg-cyan-500 text-slate-800 font-medium" onClick={() => setShowRegister(true)}>
+              <Button 
+                className="bg-cyan-400 hover:bg-cyan-500 text-slate-800"
+                onClick={() => setShowRegister(true)}
+              >
                 Register
               </Button>
             </div>
@@ -57,405 +79,238 @@ const Index = () => {
       {/* Hero Section */}
       <section className="bg-slate-800 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-left max-w-4xl">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Welcome to J Bridge Financial Services
-            </h2>
-            <p className="text-xl mb-6">
-              Get affordable financing through our innovative subscription model — <span className="text-cyan-400 font-medium">no interest charges, ever.</span>
-            </p>
-            <p className="text-lg mb-8 text-gray-300">
-              We're replacing traditional 30% monthly interest loans with a transparent, fair subscription approach.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button className="bg-cyan-400 hover:bg-cyan-500 text-slate-800 font-medium px-6 py-3" onClick={() => setShowRegister(true)}>
-                Get Started →
-              </Button>
-              <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-slate-800 px-6 py-3" onClick={() => navigate("/about")}>
-                Learn More
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Bar */}
-      <section className="bg-gray-100 py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div className="flex items-center justify-center space-x-2">
-              <Check className="h-5 w-5 text-cyan-400" />
-              <span className="text-slate-700 font-medium">Zero Interest Loans</span>
-            </div>
-            <div className="flex items-center justify-center space-x-2">
-              <Check className="h-5 w-5 text-cyan-400" />
-              <span className="text-slate-700 font-medium">Transparent Subscription Model</span>
-            </div>
-            <div className="flex items-center justify-center space-x-2">
-              <Check className="h-5 w-5 text-cyan-400" />
-              <span className="text-slate-700 font-medium">Reg. No: CC/2019/02711</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Why Choose J Bridge */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Why Choose J Bridge?</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Shield className="h-8 w-8 text-cyan-500" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-4">Interest-Free Financing</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Our subscription-based model eliminates interest charges, making loans more affordable and ethical.
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h1 className="text-4xl md:text-6xl font-bold mb-6">
+                Affordable loans with a <span className="text-cyan-400">subscription model</span>
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-300 mb-8">
+                Replacing 30% monthly interest loans
               </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Clock className="h-8 w-8 text-cyan-500" />
+              <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                <Button 
+                  size="lg" 
+                  className="bg-cyan-400 hover:bg-cyan-500 text-slate-800 font-medium"
+                  onClick={() => setShowRegister(true)}
+                >
+                  Get Started Today
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="bg-transparent border-white text-white hover:bg-white hover:text-slate-800"
+                >
+                  Learn More
+                </Button>
               </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-4">Fast Approval</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Get approved quickly with our streamlined application process and responsive support team.
-              </p>
+              
+              {/* Waiting List Form */}
+              <form onSubmit={handleWaitingListSubmit} className="flex gap-2 max-w-md">
+                <Input
+                  type="email"
+                  placeholder="Enter your email for updates"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="bg-white text-slate-800"
+                  required
+                />
+                <Button type="submit" className="bg-cyan-400 hover:bg-cyan-500 text-slate-800 whitespace-nowrap">
+                  Join Waitlist
+                </Button>
+              </form>
             </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <CreditCard className="h-8 w-8 text-cyan-500" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-4">Subscription Model</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Our unique subscription approach makes loan repayments more manageable and predictable, with no hidden fees.
-              </p>
+            
+            <div className="flex justify-center lg:justify-end">
+              <img 
+                src="/lovable-uploads/91f08756-7121-4d45-8a4e-ad048eb44dc0.png" 
+                alt="J Bridge Financial Services" 
+                className="w-64 h-64 md:w-80 md:h-80 object-contain"
+              />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Loan Calculator */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">See How Much You Can Save</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Compare our subscription model with traditional interest-based loans and see the difference for yourself.
-            </p>
-          </div>
-
-          <Card className="max-w-4xl mx-auto bg-slate-800 text-white border-0">
-            <CardContent className="p-8">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-white flex items-center">
-                  <CreditCard className="h-6 w-6 mr-3" />
-                  Loan Calculator
-                </h3>
-                <div className="bg-cyan-400 text-slate-800 px-4 py-2 rounded-lg font-bold text-sm">
-                  Save up to 65%
-                </div>
-              </div>
-              <p className="text-gray-300 mb-8">Compare traditional loans with our interest-free subscription model</p>
-
-              <div className="space-y-8">
-                <div>
-                  <div className="flex justify-between items-center mb-4">
-                    <label className="text-white font-medium">Loan Amount</label>
-                    <span className="text-xl font-bold text-cyan-400">{formatNAD(loanAmount[0])}</span>
-                  </div>
-                  <Slider value={loanAmount} onValueChange={setLoanAmount} max={50000} min={1000} step={1000} className="mb-2" />
-                  <div className="flex justify-between text-sm text-gray-400">
-                    <span>N$1,000</span>
-                    <span>N$50,000</span>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between items-center mb-4">
-                    <label className="text-white font-medium">Loan Term (months)</label>
-                    <span className="text-xl font-bold text-cyan-400">{loanTerm[0]} months</span>
-                  </div>
-                  <Slider value={loanTerm} onValueChange={setLoanTerm} max={24} min={1} step={1} className="mb-2" />
-                  <div className="flex justify-between text-sm text-gray-400">
-                    <span>1 month</span>
-                    <span>24 months</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                  <Card className="bg-red-50 border-red-200">
-                    <CardContent className="p-6">
-                      <h4 className="font-bold text-red-600 mb-2">Traditional Loan</h4>
-                      <p className="text-sm text-red-500 mb-4">With 30% monthly interest</p>
-                      <div className="space-y-3">
-                        <div className="flex justify-between">
-                          <span className="text-slate-600">Monthly Payment:</span>
-                          <span className="font-bold text-red-600">{formatNAD(traditionalMonthlyPayment)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-600">Total Cost:</span>
-                          <span className="font-bold text-red-600">{formatNAD(traditionalTotalCost)}</span>
-                        </div>
-                        <p className="text-xs text-red-500">💡 Interest adds {formatNAD(traditionalTotalCost - loanAmount[0])} to your loan</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-green-50 border-green-200">
-                    <CardContent className="p-6">
-                      <h4 className="font-bold text-green-600 mb-2">J Bridge Subscription</h4>
-                      <p className="text-sm text-green-500 mb-4">Interest-free financing</p>
-                      <div className="space-y-3">
-                        <div className="flex justify-between">
-                          <span className="text-slate-600">Monthly Payment:</span>
-                          <span className="font-bold text-green-600">{formatNAD(bridgeMonthlyPayment)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-600">Total Cost:</span>
-                          <span className="font-bold text-green-600">{formatNAD(bridgeTotalCost)}</span>
-                        </div>
-                        <p className="text-xs text-green-500">💡 Subscription is just N$249 per month</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <div className="text-center mt-8 p-6 bg-cyan-50 rounded-lg border border-cyan-200">
-                  <h4 className="text-2xl font-bold text-slate-800 mb-2">Your Total Savings</h4>
-                  <p className="text-4xl font-bold text-cyan-500 mb-2">{formatNAD(totalSavings)}</p>
-                  <p className="text-slate-600">By choosing our subscription model over traditional interest-based loans</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">How It Works</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Our innovative subscription model replaces traditional interest-based loans with a simpler, more transparent approach.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Card className="p-8 bg-gray-50">
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 bg-cyan-400 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-bold">1</span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-slate-800 mb-3">Register an Account</h3>
-                  <p className="text-gray-600">Create your account and complete your profile with basic information.</p>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-8 bg-gray-50">
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 bg-cyan-400 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-bold">2</span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-slate-800 mb-3">Choose a Subscription</h3>
-                  <p className="text-gray-600">Select the subscription plan that fits your financial needs—no interest charges, just a fixed monthly fee.</p>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-8 bg-gray-50">
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 bg-cyan-400 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-bold">3</span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-slate-800 mb-3">Apply for a Loan</h3>
-                  <p className="text-gray-600">Submit your loan application with the required documentation.</p>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-8 bg-gray-50">
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 bg-cyan-400 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-bold">4</span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-slate-800 mb-3">Receive Funds</h3>
-                  <p className="text-gray-600">After approval, funds are quickly transferred to your account—with no interest to worry about.</p>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Customer Testimonials */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">What Our Customers Say</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Don't just take our word for it—hear from real customers who have experienced the J Bridge difference.
-            </p>
-          </div>
-
+      {/* How It Works Section */}
+      <section id="how-it-works" className="py-16 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-bold text-slate-800 mb-8">How It Works</h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-12">
+            Get access to affordable loans in three simple steps.
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="p-6">
-              <div className="text-cyan-400 text-4xl mb-4">"</div>
-              <p className="text-gray-600 mb-6">
-                "J Bridge transformed my business financing experience. With no interest charges, I was able to expand my shop without the stress of growing debt."
-              </p>
-              <div className="flex text-cyan-400 mb-4">
-                {[...Array(5)].map((_, i) => <span key={i}>★</span>)}
-              </div>
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                  M
-                </div>
-                <div>
-                  <p className="font-bold text-slate-800">Booysen Kamati</p>
-                  <p className="text-sm text-gray-600">Small Business Owner</p>
-                </div>
-              </div>
+              <CardHeader>
+                <CardTitle className="text-xl font-semibold text-slate-800">1. Sign Up</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Create an account and complete your profile.
+                </p>
+              </CardContent>
             </Card>
-
             <Card className="p-6">
-              <div className="text-cyan-400 text-4xl mb-4">"</div>
-              <p className="text-gray-600 mb-6">
-                "I needed a quick loan for medical expenses. The subscription model made it affordable and the approval was fast. I'll never go back to traditional loans."
-              </p>
-              <div className="flex text-cyan-400 mb-4">
-                {[...Array(5)].map((_, i) => <span key={i}>★</span>)}
-              </div>
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                  T
-                </div>
-                <div>
-                  <p className="font-bold text-slate-800">Dominicus Iipinge</p>
-                  <p className="text-sm text-gray-600">Teacher</p>
-                </div>
-              </div>
+              <CardHeader>
+                <CardTitle className="text-xl font-semibold text-slate-800">2. Subscribe</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Choose a subscription plan that fits your needs.
+                </p>
+              </CardContent>
             </Card>
-
             <Card className="p-6">
-              <div className="text-cyan-400 text-4xl mb-4">"</div>
-              <p className="text-gray-600 mb-6">
-                "The transparency of J Bridge is refreshing. I knew exactly what I was paying each month with no surprises or hidden fees."
-              </p>
-              <div className="flex text-cyan-400 mb-4">
-                {[...Array(4)].map((_, i) => <span key={i}>★</span>)}
-                <span className="text-gray-300">★</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                  S
-                </div>
-                <div>
-                  <p className="font-bold text-slate-800">Selma Amutenya</p>
-                  <p className="text-sm text-gray-600">Government Employee</p>
-                </div>
-              </div>
-            </Card>
-          </div>
-
-          <div className="text-center mt-12">
-            <p className="text-cyan-400 font-medium">Join thousands of satisfied customers across Namibia</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Comparison Table */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
-              Why Our Subscription Model Beats Traditional Loans
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <Card className="p-8 bg-red-50 border-red-200">
-              <h3 className="text-xl font-bold text-red-600 mb-6">Traditional Interest-Based Loans</h3>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <X className="h-5 w-5 text-red-500" />
-                  <span className="text-gray-700">Up to 30% monthly interest charges</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <X className="h-5 w-5 text-red-500" />
-                  <span className="text-gray-700">Compounding debt that grows over time</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <X className="h-5 w-5 text-red-500" />
-                  <span className="text-gray-700">Hidden fees and charges</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <X className="h-5 w-5 text-red-500" />
-                  <span className="text-gray-700">Paying more than you borrowed</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <X className="h-5 w-5 text-red-500" />
-                  <span className="text-gray-700">Difficult to predict total costs</span>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-8 bg-green-50 border-green-200">
-              <h3 className="text-xl font-bold text-green-600 mb-6">J Bridge Subscription Model</h3>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <Check className="h-5 w-5 text-green-500" />
-                  <span className="text-gray-700">Zero interest charges—ever</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Check className="h-5 w-5 text-green-500" />
-                  <span className="text-gray-700">Fixed, predictable monthly payments</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Check className="h-5 w-5 text-green-500" />
-                  <span className="text-gray-700">Transparent fee structure</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Check className="h-5 w-5 text-green-500" />
-                  <span className="text-gray-700">Never pay more than expected</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Check className="h-5 w-5 text-green-500" />
-                  <span className="text-gray-700">Know the total cost upfront</span>
-                </div>
-              </div>
+              <CardHeader>
+                <CardTitle className="text-xl font-semibold text-slate-800">3. Get a Loan</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Apply for a loan and receive funds quickly.
+                </p>
+              </CardContent>
             </Card>
           </div>
         </div>
       </section>
 
-      {/* Call to Action */}
-      <section className="py-20 bg-cyan-400">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Ready to Experience Interest-Free Financing?
-          </h2>
-          <p className="text-xl text-white mb-8 max-w-3xl mx-auto">
-            Join thousands of customers who trust J Bridge for their financial needs—without the burden of interest charges.
+      {/* Pricing Section */}
+      <section id="pricing" className="py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-bold text-slate-800 mb-8">Pricing</h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-12">
+            Choose the subscription plan that's right for you.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-cyan-400 hover:bg-gray-100 font-medium px-8 py-3" onClick={() => setShowRegister(true)}>
-              Register Now
-            </Button>
-            <Button size="lg" variant="outline" className="border-white hover:bg-white font-medium px-8 py-3 text-cyan-400" onClick={() => navigate("/blacklist")}>
-              Check Blacklist
-            </Button>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Card className="p-6">
+              <CardHeader>
+                <CardTitle className="text-2xl font-semibold text-slate-800">Basic</CardTitle>
+                <CardDescription className="text-gray-600">
+                  For small loans
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-5xl font-bold text-slate-800 mb-4">N$99</div>
+                <ul className="list-disc list-inside text-gray-600 mb-6">
+                  <li>Access to loans up to N$5,000</li>
+                  <li>Standard interest rates</li>
+                  <li>Basic support</li>
+                </ul>
+                <Button className="w-full bg-cyan-400 hover:bg-cyan-500 text-slate-800">
+                  Choose Plan
+                </Button>
+              </CardContent>
+            </Card>
+            <Card className="p-6">
+              <CardHeader>
+                <CardTitle className="text-2xl font-semibold text-slate-800">Standard</CardTitle>
+                <CardDescription className="text-gray-600">
+                  For medium-sized loans
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-5xl font-bold text-slate-800 mb-4">N$199</div>
+                <ul className="list-disc list-inside text-gray-600 mb-6">
+                  <li>Access to loans up to N$15,000</li>
+                  <li>Reduced interest rates</li>
+                  <li>Priority support</li>
+                </ul>
+                <Button className="w-full bg-cyan-400 hover:bg-cyan-500 text-slate-800">
+                  Choose Plan
+                </Button>
+              </CardContent>
+            </Card>
+            <Card className="p-6">
+              <CardHeader>
+                <CardTitle className="text-2xl font-semibold text-slate-800">Premium</CardTitle>
+                <CardDescription className="text-gray-600">
+                  For large loans
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-5xl font-bold text-slate-800 mb-4">N$299</div>
+                <ul className="list-disc list-inside text-gray-600 mb-6">
+                  <li>Access to loans up to N$50,000</li>
+                  <li>Lowest interest rates</li>
+                  <li>24/7 premium support</li>
+                </ul>
+                <Button className="w-full bg-cyan-400 hover:bg-cyan-500 text-slate-800">
+                  Choose Plan
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Us Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-slate-800 mb-6">Why Choose Us</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Experience the J Bridge difference: affordable loans, transparent terms, and a
+              commitment to your financial well-being.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Card className="p-6">
+              <CardContent className="pt-6">
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                  <TrendingUp className="h-6 w-6 text-blue-600" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-800 mb-3">Affordable Rates</h3>
+                <p className="text-gray-600">
+                  Enjoy competitive interest rates and flexible repayment options.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="p-6">
+              <CardContent className="pt-6">
+                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                  <Shield className="h-6 w-6 text-green-600" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-800 mb-3">Transparent Terms</h3>
+                <p className="text-gray-600">
+                  We provide clear, easy-to-understand loan agreements with no hidden fees.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="p-6">
+              <CardContent className="pt-6">
+                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-4">
+                  <Star className="h-6 w-6 text-yellow-600" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-800 mb-3">Customer Satisfaction</h3>
+                <p className="text-gray-600">
+                  Our priority is your financial success. We're here to support you every step of
+                  the way.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* About Us Section */}
+      <section id="about" className="py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div>
+              <h2 className="text-3xl font-bold text-slate-800 mb-6">About Us</h2>
+              <p className="text-xl text-gray-600 mb-8">
+                J Bridge Financial Services is revolutionizing the lending industry with our
+                innovative subscription-based model. We're committed to providing affordable,
+                transparent, and customer-focused financial solutions.
+              </p>
+              <Button className="bg-cyan-400 hover:bg-cyan-500 text-slate-800">Learn More</Button>
+            </div>
+            <div>
+              <img
+                src="https://via.placeholder.com/500x300"
+                alt="About J Bridge Financial Services"
+                className="rounded-lg shadow-lg"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -465,32 +320,34 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h3 className="text-xl font-bold mb-4">J Bridge</h3>
-              <p className="text-gray-300 mb-4">Interest-free loans with a subscription model. Reg. No: CC/2019/02711</p>
+              <h3 className="text-lg font-bold mb-4">J Bridge</h3>
+              <p className="text-gray-300 mb-4">
+                Affordable loans with a subscription model. Replacing 30% monthly interest loans.
+              </p>
               <div className="space-y-2 text-gray-300">
-                <p>Contact Us: info@jbridgefinance.online</p>
-                <p>Phone: +264 81 219 1482</p>
-                <p>Address: 123 Independence Avenue, Windhoek</p>
+                <p>📞 +264 81 219 1482</p>
+                <p>✉️ info@jbridgefinance.online</p>
+                <p>📍 123 Independence Avenue, Windhoek</p>
               </div>
             </div>
             
             <div>
               <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
               <div className="space-y-2 text-gray-300">
+                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/")}>Home</p>
                 <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/about")}>About Us</p>
                 <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/contact")}>Contact</p>
                 <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/careers")}>Careers</p>
-                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/blacklist")}>Blacklist</p>
-                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => setShowSignIn(true)}>Sign In</p>
+                <p className="hover:text-cyan-400 cursor-pointer">Blacklist</p>
               </div>
             </div>
             
             <div>
               <h4 className="text-lg font-semibold mb-4">Legal</h4>
               <div className="space-y-2 text-gray-300">
-                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/privacy-policy")}>Privacy Policy</p>
                 <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/terms-of-service")}>Terms of Service</p>
-                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => setShowRegister(true)}>Register</p>
+                <p className="hover:text-cyan-400 cursor-pointer" onClick={() => navigate("/privacy-policy")}>Privacy Policy</p>
+                <p className="hover:text-cyan-400 cursor-pointer">Loan Agreement</p>
               </div>
             </div>
           </div>
@@ -506,8 +363,30 @@ const Index = () => {
       </footer>
 
       {/* Modals */}
-      <SignInModal open={showSignIn} onOpenChange={setShowSignIn} onSwitchToRegister={handleSwitchToRegister} />
-      <RegisterModal open={showRegister} onOpenChange={setShowRegister} onSwitchToSignIn={handleSwitchToSignIn} />
-    </div>;
+      <SignInModal 
+        open={showSignIn} 
+        onOpenChange={setShowSignIn}
+        onSwitchToRegister={() => {
+          setShowSignIn(false);
+          setShowRegister(true);
+        }}
+      />
+      
+      <RegisterModal 
+        open={showRegister} 
+        onOpenChange={setShowRegister}
+        onSwitchToSignIn={() => {
+          setShowRegister(false);
+          setShowSignIn(true);
+        }}
+      />
+
+      <EmployeeSignInModal 
+        open={showEmployeeSignIn} 
+        onOpenChange={setShowEmployeeSignIn}
+      />
+    </div>
+  );
 };
+
 export default Index;
