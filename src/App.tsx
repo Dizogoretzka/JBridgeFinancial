@@ -7,9 +7,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { EmployeeProtectedRoute } from "@/components/employee/EmployeeProtectedRoute";
-import { EmployeeDashboardLayout } from "@/components/employee/EmployeeDashboardLayout";
-import EmployeeDashboard from "@/pages/employee/EmployeeDashboard";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Blacklist from "./pages/Blacklist";
@@ -46,75 +43,6 @@ const AuthenticatedApp = () => {
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/terms-of-service" element={<TermsOfService />} />
       <Route path="/careers" element={<Careers />} />
-      
-      {/* Employee routes */}
-      <Route path="/employee/dashboard" element={
-        <EmployeeProtectedRoute>
-          <EmployeeDashboardLayout>
-            <EmployeeDashboard />
-          </EmployeeDashboardLayout>
-        </EmployeeProtectedRoute>
-      } />
-      <Route path="/employee/loan-applications" element={
-        <EmployeeProtectedRoute>
-          <EmployeeDashboardLayout>
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900">Loan Applications</h2>
-              <p className="text-gray-600 mt-2">Review and manage client loan applications</p>
-            </div>
-          </EmployeeDashboardLayout>
-        </EmployeeProtectedRoute>
-      } />
-      <Route path="/employee/clients" element={
-        <EmployeeProtectedRoute>
-          <EmployeeDashboardLayout>
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900">Client Management</h2>
-              <p className="text-gray-600 mt-2">Manage client records and information</p>
-            </div>
-          </EmployeeDashboardLayout>
-        </EmployeeProtectedRoute>
-      } />
-      <Route path="/employee/blacklist" element={
-        <EmployeeProtectedRoute>
-          <EmployeeDashboardLayout>
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900">Blacklist Management</h2>
-              <p className="text-gray-600 mt-2">Manage blacklisted clients</p>
-            </div>
-          </EmployeeDashboardLayout>
-        </EmployeeProtectedRoute>
-      } />
-      <Route path="/employee/credit-scores" element={
-        <EmployeeProtectedRoute>
-          <EmployeeDashboardLayout>
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900">Credit Score Management</h2>
-              <p className="text-gray-600 mt-2">Monitor and adjust client credit scores</p>
-            </div>
-          </EmployeeDashboardLayout>
-        </EmployeeProtectedRoute>
-      } />
-      <Route path="/employee/reports" element={
-        <EmployeeProtectedRoute>
-          <EmployeeDashboardLayout>
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900">Reports & Analytics</h2>
-              <p className="text-gray-600 mt-2">Generate performance and analytics reports</p>
-            </div>
-          </EmployeeDashboardLayout>
-        </EmployeeProtectedRoute>
-      } />
-      <Route path="/employee/settings" element={
-        <EmployeeProtectedRoute>
-          <EmployeeDashboardLayout>
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900">Settings</h2>
-              <p className="text-gray-600 mt-2">Configure system settings and preferences</p>
-            </div>
-          </EmployeeDashboardLayout>
-        </EmployeeProtectedRoute>
-      } />
       
       {/* Protected dashboard routes */}
       <Route path="/dashboard" element={
