@@ -6,6 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useAuth } from "@/hooks/useAuth";
 import { Home, FileText, User, CreditCard, TrendingUp, LogOut } from "lucide-react";
 import { useNavigate, NavLink, useLocation } from "react-router-dom";
+
 const menuItems = [{
   title: "Dashboard",
   url: "/dashboard",
@@ -27,16 +28,21 @@ const menuItems = [{
   url: "/dashboard/credit",
   icon: TrendingUp
 }];
+
 export const DashboardSidebar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
   const isActive = (path: string) => currentPath === path;
-  return <Sidebar className="bg-blue-600 text-white border-r-0">
+  
+  return (
+    <Sidebar className="bg-blue-600 text-white border-r-0">
       <SidebarHeader className="p-4 bg-sky-950">
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-white rounded flex items-center justify-center">
-            <span className="text-blue-600 font-bold text-sm">JBF</span>
-          </div>
+          <img 
+            src="/lovable-uploads/91f08756-7121-4d45-8a4e-ad048eb44dc0.png" 
+            alt="J Bridge Logo" 
+            className="w-8 h-8"
+          />
           <span className="font-semibold text-lg">J Bridge</span>
         </div>
       </SidebarHeader>
@@ -58,8 +64,10 @@ export const DashboardSidebar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-    </Sidebar>;
+    </Sidebar>
+  );
 };
+
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }

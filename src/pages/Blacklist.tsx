@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,70 +9,19 @@ const Blacklist = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
-  // This would normally check if user is authenticated
-  // For now, we'll simulate this check
-  const isAuthenticated = false; // This should be replaced with actual auth check
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-slate-800 text-white">
-        {/* Header */}
-        <header className="bg-slate-900">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center py-4">
-              <div className="flex items-center">
-                <h1 className="text-xl font-medium cursor-pointer" onClick={() => navigate("/")}>
-                  <span className="font-bold">J Bridge</span> 
-                  <span className="text-cyan-400 text-sm ml-2">Financial Services</span>
-                </h1>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Restricted Access Message */}
-        <div className="flex items-center justify-center min-h-[80vh]">
-          <div className="text-center max-w-2xl mx-auto px-4">
-            <div className="w-20 h-20 bg-cyan-400 rounded-full flex items-center justify-center mx-auto mb-8">
-              <Shield className="h-10 w-10 text-slate-800" />
-            </div>
-            <h1 className="text-4xl font-bold mb-6">Blacklist Registry</h1>
-            <p className="text-xl text-gray-300 mb-8">
-              A public registry of individuals who have defaulted on loans or violated the terms of 
-              our financial agreements.
-            </p>
-            <p className="text-lg text-gray-400 mb-8">
-              Access to the blacklist registry is restricted to registered J Bridge members only.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                className="bg-cyan-400 hover:bg-cyan-500 text-slate-800 font-medium px-8 py-3"
-                onClick={() => navigate("/")}
-              >
-                Sign Up to Access
-              </Button>
-              <Button 
-                variant="outline" 
-                className="border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-slate-800 px-8 py-3"
-                onClick={() => navigate("/")}
-              >
-                Back to Home
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
       <header className="bg-slate-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <div className="flex items-center">
-              <h1 className="text-xl font-medium">
+            <div className="flex items-center space-x-2">
+              <img 
+                src="/lovable-uploads/91f08756-7121-4d45-8a4e-ad048eb44dc0.png" 
+                alt="J Bridge Logo" 
+                className="w-8 h-8"
+              />
+              <h1 className="text-xl font-medium cursor-pointer" onClick={() => navigate("/")}>
                 <span className="font-bold">J Bridge</span> 
                 <span className="text-cyan-400 text-sm ml-2">Financial Services</span>
               </h1>
@@ -111,6 +59,28 @@ const Blacklist = () => {
               />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Blacklist Results Section */}
+      <section className="py-12 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Card>
+            <CardContent className="p-8">
+              <div className="text-center">
+                <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  {searchQuery ? `No results found for "${searchQuery}"` : "Enter a name to search"}
+                </h3>
+                <p className="text-gray-600">
+                  {searchQuery 
+                    ? "The person you're looking for is not currently on our blacklist." 
+                    : "Use the search bar above to check if someone is on our blacklist registry."
+                  }
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
 

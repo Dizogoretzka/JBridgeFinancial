@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
-import { useNavigate } from "react-router-dom";
 
 interface RegisterModalProps {
   open: boolean;
@@ -22,7 +20,6 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
     repeatPassword: ""
   });
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -75,10 +72,10 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
       } else {
         toast({
           title: "Success",
-          description: "Account created successfully! Redirecting to dashboard...",
+          description: "Account created successfully! Please check your email to verify your account.",
         });
         onOpenChange(false);
-        navigate('/dashboard');
+        // Do not navigate to dashboard on sign up - only after email verification
       }
     } catch (error) {
       toast({
