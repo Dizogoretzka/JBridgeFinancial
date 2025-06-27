@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useEmployeeAuth } from "@/hooks/useEmployeeAuth";
+import { useNavigate } from "react-router-dom";
 import { 
   Users, 
   CreditCard, 
@@ -17,6 +18,7 @@ import {
 
 const EmployeeDashboard = () => {
   const { employee } = useEmployeeAuth();
+  const navigate = useNavigate();
 
   const dashboardStats = [
     { title: "Pending Applications", value: "12", icon: Clock, color: "text-yellow-600" },
@@ -33,6 +35,10 @@ const EmployeeDashboard = () => {
     { title: "Credit Scores", description: "Monitor JBCS credit scores", icon: TrendingUp, path: "/employee/credit" },
     { title: "System Settings", description: "Administrative tools", icon: Settings, path: "/employee/settings" },
   ];
+
+  const handleQuickAction = (path: string) => {
+    navigate(path);
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -83,7 +89,11 @@ const EmployeeDashboard = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <Button variant="outline" className="w-full">
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => handleQuickAction(action.path)}
+                >
                   Access
                 </Button>
               </CardContent>
