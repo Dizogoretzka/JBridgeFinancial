@@ -1,13 +1,63 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Shield, Search, Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+
+interface BlacklistEntry {
+  id: string;
+  id_number: string;
+  full_name: string;
+  phone_number: string | null;
+  reason: string | null;
+  created_at: string;
+}
 
 const Blacklist = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [blacklistData, setBlacklistData] = useState<BlacklistEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filteredData, setFilteredData] = useState<BlacklistEntry[]>([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchBlacklistData();
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      const filtered = blacklistData.filter(entry =>
+        entry.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        entry.id_number.includes(searchQuery)
+      );
+      setFilteredData(filtered);
+    } else {
+      setFilteredData(blacklistData);
+    }
+  }, [searchQuery, blacklistData]);
+
+  const fetchBlacklistData = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('blacklist')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching blacklist:', error);
+      } else {
+        setBlacklistData(data || []);
+        setFilteredData(data || []);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -52,7 +102,7 @@ const Blacklist = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <Input
                 type="text"
-                placeholder="Search by name..."
+                placeholder="Search by name or ID number..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 bg-white text-slate-800"
@@ -64,23 +114,63 @@ const Blacklist = () => {
 
       {/* Blacklist Results Section */}
       <section className="py-12 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Card>
-            <CardContent className="p-8">
-              <div className="text-center">
-                <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {searchQuery ? `No results found for "${searchQuery}"` : "Enter a name to search"}
-                </h3>
-                <p className="text-gray-600">
-                  {searchQuery 
-                    ? "The person you're looking for is not currently on our blacklist." 
-                    : "Use the search bar above to check if someone is on our blacklist registry."
-                  }
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          {loading ? (
+            <Card>
+              <CardContent className="p-8">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Loading...</h3>
+                  <p className="text-gray-600">Fetching blacklist data...</p>
+                </div>
+              </CardContent>
+            </Card>
+          ) : filteredData.length > 0 ? (
+            <Card>
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Full Name</TableHead>
+                        <TableHead>ID Number</TableHead>
+                        <TableHead>Phone Number</TableHead>
+                        <TableHead>Reason</TableHead>
+                        <TableHead>Date Added</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredData.map((entry) => (
+                        <TableRow key={entry.id}>
+                          <TableCell className="font-medium">{entry.full_name}</TableCell>
+                          <TableCell>{entry.id_number}</TableCell>
+                          <TableCell>{entry.phone_number || 'N/A'}</TableCell>
+                          <TableCell>{entry.reason || 'N/A'}</TableCell>
+                          <TableCell>{new Date(entry.created_at).toLocaleDateString()}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardContent className="p-8">
+                <div className="text-center">
+                  <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    {searchQuery ? `No results found for "${searchQuery}"` : "No entries found"}
+                  </h3>
+                  <p className="text-gray-600">
+                    {searchQuery 
+                      ? "The person you're looking for is not currently on our blacklist." 
+                      : "The blacklist registry is currently empty."}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </section>
 

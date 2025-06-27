@@ -8,15 +8,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 
-interface SignInModalProps {
+interface EmployeeSignInModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSwitchToRegister: () => void;
 }
 
-const SignInModal = ({ open, onOpenChange, onSwitchToRegister }: SignInModalProps) => {
+export const EmployeeSignInModal = ({ open, onOpenChange }: EmployeeSignInModalProps) => {
   const [loginData, setLoginData] = useState({
-    email: "",
+    username: "",
     password: ""
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -29,24 +28,29 @@ const SignInModal = ({ open, onOpenChange, onSwitchToRegister }: SignInModalProp
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: loginData.email,
-        password: loginData.password,
+      // Call edge function to authenticate employee
+      const { data, error } = await supabase.functions.invoke('employee-auth', {
+        body: {
+          username: loginData.username,
+          password: loginData.password,
+        }
       });
 
       if (error) {
         toast({
           title: "Sign In Error",
-          description: error.message,
+          description: "Invalid username or password",
           variant: "destructive",
         });
-      } else {
+      } else if (data?.success) {
         toast({
           title: "Success",
-          description: "Successfully signed in! Redirecting to dashboard...",
+          description: "Successfully signed in! Redirecting to employee dashboard...",
         });
+        // Store employee session
+        localStorage.setItem('employee_session', JSON.stringify(data.employee));
         onOpenChange(false);
-        navigate('/dashboard');
+        navigate('/employee/dashboard');
       }
     } catch (error) {
       toast({
@@ -64,20 +68,20 @@ const SignInModal = ({ open, onOpenChange, onSwitchToRegister }: SignInModalProp
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(forgotPasswordEmail, {
-        redirectTo: `${window.location.origin}/reset-password`,
+      const { error } = await supabase.functions.invoke('employee-password-reset', {
+        body: { email: forgotPasswordEmail }
       });
 
       if (error) {
         toast({
           title: "Error",
-          description: error.message,
+          description: "Failed to send password reset email",
           variant: "destructive",
         });
       } else {
         toast({
           title: "Success",
-          description: "Password reset email sent! Please check your inbox.",
+          description: "Password reset email sent successfully",
         });
         setShowForgotPassword(false);
         setForgotPasswordEmail("");
@@ -93,28 +97,35 @@ const SignInModal = ({ open, onOpenChange, onSwitchToRegister }: SignInModalProp
     }
   };
 
-  const handleSwitchToRegister = () => {
-    onOpenChange(false);
-    onSwitchToRegister();
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-full max-w-md mx-4 sm:mx-auto">
         <DialogHeader>
+          <div className="flex items-center justify-center mb-4">
+            <img 
+              src="/lovable-uploads/91f08756-7121-4d45-8a4e-ad048eb44dc0.png" 
+              alt="J Bridge Logo" 
+              className="w-12 h-12"
+            />
+          </div>
           <DialogTitle className="text-center text-xl font-semibold text-slate-800">
-            {showForgotPassword ? "Reset Password" : "Welcome back"}
+            {showForgotPassword ? "Reset Password" : "Employee Portal"}
           </DialogTitle>
+          {!showForgotPassword && (
+            <p className="text-center text-gray-600 text-sm">
+              J Bridge Financial Services
+            </p>
+          )}
         </DialogHeader>
         
         {showForgotPassword ? (
           <form onSubmit={handleForgotPassword} className="space-y-4 px-2">
             <div className="space-y-2">
-              <Label htmlFor="forgotEmail">Email</Label>
+              <Label htmlFor="forgotEmail">Email Address</Label>
               <Input
                 id="forgotEmail"
                 type="email"
-                placeholder="Enter your email"
+                placeholder="Enter your email address"
                 value={forgotPasswordEmail}
                 onChange={(e) => setForgotPasswordEmail(e.target.value)}
                 className="w-full"
@@ -143,13 +154,13 @@ const SignInModal = ({ open, onOpenChange, onSwitchToRegister }: SignInModalProp
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4 px-2">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="username">Username</Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={loginData.email}
-                onChange={(e) => setLoginData(prev => ({ ...prev, email: e.target.value }))}
+                id="username"
+                type="text"
+                placeholder="Enter your username"
+                value={loginData.username}
+                onChange={(e) => setLoginData(prev => ({ ...prev, username: e.target.value }))}
                 className="w-full"
                 required
                 disabled={isLoading}
@@ -160,7 +171,7 @@ const SignInModal = ({ open, onOpenChange, onSwitchToRegister }: SignInModalProp
               <Input
                 id="password"
                 type="password"
-                placeholder="Password"
+                placeholder="Enter your password"
                 value={loginData.password}
                 onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
                 className="w-full"
@@ -180,27 +191,14 @@ const SignInModal = ({ open, onOpenChange, onSwitchToRegister }: SignInModalProp
             </div>
             <Button 
               type="submit" 
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+              className="w-full bg-gradient-to-r from-blue-500 to-slate-700 hover:from-blue-600 hover:to-slate-800 text-white"
               disabled={isLoading}
             >
-              {isLoading ? "Signing In..." : "Sign In"}
+              {isLoading ? "Signing In..." : "Login"}
             </Button>
-            <div className="text-center text-sm text-gray-600">
-              Don't have an account?{" "}
-              <button
-                type="button"
-                onClick={handleSwitchToRegister}
-                className="text-blue-600 hover:underline"
-                disabled={isLoading}
-              >
-                Sign up
-              </button>
-            </div>
           </form>
         )}
       </DialogContent>
     </Dialog>
   );
 };
-
-export default SignInModal;
