@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Users, Shield, TrendingUp, Phone, Mail, MapPin } from "lucide-react";
-import { RegisterModal } from "@/components/auth/RegisterModal";
-import { SignInModal } from "@/components/auth/SignInModal";
-import { FAQSection } from "@/components/faq/FAQSection";
-import { WaitingListProcess } from "@/components/process/WaitingListProcess";
-import { CompanyInfo } from "@/components/company/CompanyInfo";
+import RegisterModal from "@/components/auth/RegisterModal";
+import SignInModal from "@/components/auth/SignInModal";
+import FAQSection from "@/components/faq/FAQSection";
+import WaitingListProcess from "@/components/process/WaitingListProcess";
+import CompanyInfo from "@/components/company/CompanyInfo";
 import MainNavigation from "@/components/navigation/MainNavigation";
 
 const Index = () => {
@@ -252,8 +252,22 @@ const Index = () => {
         </div>
       </footer>
 
-      <RegisterModal isOpen={isRegisterOpen} onClose={() => setIsRegisterOpen(false)} />
-      <SignInModal isOpen={isSignInOpen} onClose={() => setIsSignInOpen(false)} />
+      <RegisterModal 
+        open={isRegisterOpen} 
+        onOpenChange={setIsRegisterOpen}
+        onSwitchToSignIn={() => {
+          setIsRegisterOpen(false);
+          setIsSignInOpen(true);
+        }}
+      />
+      <SignInModal 
+        open={isSignInOpen} 
+        onOpenChange={setIsSignInOpen}
+        onSwitchToRegister={() => {
+          setIsSignInOpen(false);
+          setIsRegisterOpen(true);
+        }}
+      />
     </div>
   );
 };
