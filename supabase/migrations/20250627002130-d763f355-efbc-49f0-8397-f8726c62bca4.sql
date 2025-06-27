@@ -1,18 +1,6 @@
 
--- Create employee authentication table
-CREATE TABLE public.employees (
-  id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
-  username TEXT UNIQUE NOT NULL,
-  password_hash TEXT NOT NULL,
-  full_name TEXT,
-  email TEXT UNIQUE,
-  role TEXT DEFAULT 'employee',
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
-);
-
--- Create blacklist table for client management
-CREATE TABLE public.blacklist (
+-- Check if blacklist table exists, if not create it
+CREATE TABLE IF NOT EXISTS public.blacklist (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   id_number TEXT UNIQUE NOT NULL,
   full_name TEXT NOT NULL,
@@ -22,8 +10,8 @@ CREATE TABLE public.blacklist (
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 
--- Create loan applications table
-CREATE TABLE public.loan_applications (
+-- Check if loan_applications table exists, if not create it  
+CREATE TABLE IF NOT EXISTS public.loan_applications (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id) NOT NULL,
   amount DECIMAL(10,2) NOT NULL,
@@ -35,18 +23,26 @@ CREATE TABLE public.loan_applications (
   reviewed_at TIMESTAMP WITH TIME ZONE
 );
 
--- Enable RLS on all tables
+-- Enable RLS on tables (will only apply if not already enabled)
 ALTER TABLE public.employees ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.blacklist ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.loan_applications ENABLE ROW LEVEL SECURITY;
 
--- RLS policies for employees (only employees can access)
+-- Drop existing policies if they exist to avoid conflicts
+DROP POLICY IF EXISTS "Employees can view employee records" ON public.employees;
+DROP POLICY IF EXISTS "Anyone can view blacklist" ON public.blacklist;
+DROP POLICY IF EXISTS "Only employees can modify blacklist" ON public.blacklist;
+DROP POLICY IF EXISTS "Users can view their own applications" ON public.loan_applications;
+DROP POLICY IF EXISTS "Users can create their own applications" ON public.loan_applications;
+DROP POLICY IF EXISTS "Employees can view all applications" ON public.loan_applications;
+DROP POLICY IF EXISTS "Employees can update applications" ON public.loan_applications;
+
+-- Create RLS policies
 CREATE POLICY "Employees can view employee records" 
   ON public.employees 
   FOR SELECT 
-  USING (true); -- Will be restricted by application logic
+  USING (true);
 
--- RLS policies for blacklist (public read access)
 CREATE POLICY "Anyone can view blacklist" 
   ON public.blacklist 
   FOR SELECT 
@@ -57,7 +53,6 @@ CREATE POLICY "Only employees can modify blacklist"
   FOR ALL 
   USING (EXISTS (SELECT 1 FROM public.employees WHERE id = auth.uid()));
 
--- RLS policies for loan applications
 CREATE POLICY "Users can view their own applications" 
   ON public.loan_applications 
   FOR SELECT 
@@ -78,7 +73,7 @@ CREATE POLICY "Employees can update applications"
   FOR UPDATE 
   USING (EXISTS (SELECT 1 FROM public.employees WHERE id = auth.uid()));
 
--- Insert initial employee (pius with password hash for '10101010')
--- Note: In production, this should be properly hashed using bcrypt
+-- Insert initial employee if not exists
 INSERT INTO public.employees (username, password_hash, full_name, email, role)
-VALUES ('pius', '$2b$10$rGKqHNNQGJqT5K9yGz5p7.X8VZxQV4KYmOHrJGQV9V5YzM2VnXYzC', 'Pius Employee', 'pius@jbridge.com', 'admin');
+SELECT 'pius', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Pius Employee', 'pius@jbridge.com', 'admin'
+WHERE NOT EXISTS (SELECT 1 FROM public.employees WHERE username = 'pius');

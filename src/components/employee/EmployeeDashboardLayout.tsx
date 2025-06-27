@@ -4,55 +4,38 @@ import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGrou
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Home, FileText, Users, CreditCard, TrendingUp, LogOut, Shield, Settings } from "lucide-react";
+import { useEmployeeAuth } from "@/hooks/useEmployeeAuth";
+import { 
+  Home, 
+  FileText, 
+  Users, 
+  CreditCard, 
+  TrendingUp, 
+  Shield, 
+  Settings, 
+  LogOut,
+  DollarSign
+} from "lucide-react";
 import { useNavigate, NavLink, useLocation } from "react-router-dom";
 
 const menuItems = [
-  {
-    title: "Dashboard",
-    url: "/employee/dashboard",
-    icon: Home
-  },
-  {
-    title: "Loan Applications",
-    url: "/employee/loan-applications",
-    icon: CreditCard
-  },
-  {
-    title: "Client Management",
-    url: "/employee/clients",
-    icon: Users
-  },
-  {
-    title: "Blacklist Management",
-    url: "/employee/blacklist",
-    icon: Shield
-  },
-  {
-    title: "Credit Scores",
-    url: "/employee/credit-scores",
-    icon: TrendingUp
-  },
-  {
-    title: "Reports",
-    url: "/employee/reports",
-    icon: FileText
-  },
-  {
-    title: "Settings",
-    url: "/employee/settings",
-    icon: Settings
-  }
+  { title: "Dashboard", url: "/employee/dashboard", icon: Home },
+  { title: "Applications", url: "/employee/applications", icon: FileText },
+  { title: "Disbursements", url: "/employee/disbursements", icon: DollarSign },
+  { title: "Clients", url: "/employee/clients", icon: Users },
+  { title: "Blacklist", url: "/employee/blacklist", icon: Shield },
+  { title: "Credit Scores", url: "/employee/credit", icon: TrendingUp },
+  { title: "Settings", url: "/employee/settings", icon: Settings },
 ];
 
-export const EmployeeDashboardSidebar = () => {
+export const EmployeeSidebar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
   const isActive = (path: string) => currentPath === path;
   
   return (
     <Sidebar className="bg-blue-600 text-white border-r-0">
-      <SidebarHeader className="p-4 bg-blue-800">
+      <SidebarHeader className="p-4 bg-sky-950">
         <div className="flex items-center space-x-2">
           <img 
             src="/lovable-uploads/91f08756-7121-4d45-8a4e-ad048eb44dc0.png" 
@@ -63,9 +46,9 @@ export const EmployeeDashboardSidebar = () => {
         </div>
       </SidebarHeader>
       
-      <SidebarContent className="bg-blue-800">
+      <SidebarContent className="bg-sky-950">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-blue-100">Management</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-blue-100">Employee Portal</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map(item => (
@@ -98,19 +81,13 @@ interface EmployeeDashboardLayoutProps {
 }
 
 export const EmployeeDashboardLayout = ({ children }: EmployeeDashboardLayoutProps) => {
+  const { employee, signOut } = useEmployeeAuth();
   const navigate = useNavigate();
 
-  const handleSignOut = () => {
-    localStorage.removeItem('employee_session');
-    navigate('/');
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/employee/signin');
   };
-
-  const getEmployeeData = () => {
-    const session = localStorage.getItem('employee_session');
-    return session ? JSON.parse(session) : null;
-  };
-
-  const employee = getEmployeeData();
 
   const getUserInitials = () => {
     if (employee?.full_name) {
@@ -122,7 +99,7 @@ export const EmployeeDashboardLayout = ({ children }: EmployeeDashboardLayoutPro
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50">
-        <EmployeeDashboardSidebar />
+        <EmployeeSidebar />
         
         <div className="flex-1 flex flex-col">
           {/* Top Navigation */}
@@ -130,7 +107,7 @@ export const EmployeeDashboardLayout = ({ children }: EmployeeDashboardLayoutPro
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <SidebarTrigger className="lg:hidden" />
-                <h1 className="text-xl font-semibold text-gray-800">Employee Dashboard</h1>
+                <h1 className="text-xl font-semibold text-gray-800">Employee Portal</h1>
               </div>
               
               <div className="flex items-center space-x-4">
@@ -153,9 +130,6 @@ export const EmployeeDashboardLayout = ({ children }: EmployeeDashboardLayoutPro
                         <p className="text-xs text-muted-foreground">
                           {employee?.email || 'Employee'}
                         </p>
-                        <p className="text-xs text-blue-600 font-medium">
-                          {employee?.role || 'Employee'}
-                        </p>
                       </div>
                     </div>
                     <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
@@ -169,7 +143,7 @@ export const EmployeeDashboardLayout = ({ children }: EmployeeDashboardLayoutPro
           </header>
           
           {/* Main Content */}
-          <main className="flex-1 p-6">
+          <main className="flex-1">
             {children}
           </main>
         </div>

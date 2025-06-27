@@ -5,11 +5,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { EmployeeAuthProvider } from "@/hooks/useEmployeeAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { EmployeeProtectedRoute } from "@/components/employee/EmployeeProtectedRoute";
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { EmployeeDashboardLayout } from "@/components/employee/EmployeeDashboardLayout";
-import EmployeeDashboard from "@/pages/employee/EmployeeDashboard";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Blacklist from "./pages/Blacklist";
@@ -21,6 +21,8 @@ import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Documents from "./pages/dashboard/Documents";
 import Profile from "./pages/dashboard/Profile";
+import EmployeeSignInPage from "./pages/employee/EmployeeSignInPage";
+import EmployeeDashboardPage from "./pages/employee/EmployeeDashboardPage";
 
 const queryClient = new QueryClient();
 
@@ -48,19 +50,30 @@ const AuthenticatedApp = () => {
       <Route path="/careers" element={<Careers />} />
       
       {/* Employee routes */}
+      <Route path="/employee/signin" element={<EmployeeSignInPage />} />
       <Route path="/employee/dashboard" element={
         <EmployeeProtectedRoute>
           <EmployeeDashboardLayout>
-            <EmployeeDashboard />
+            <EmployeeDashboardPage />
           </EmployeeDashboardLayout>
         </EmployeeProtectedRoute>
       } />
-      <Route path="/employee/loan-applications" element={
+      <Route path="/employee/applications" element={
         <EmployeeProtectedRoute>
           <EmployeeDashboardLayout>
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900">Loan Applications</h2>
-              <p className="text-gray-600 mt-2">Review and manage client loan applications</p>
+            <div className="p-6">
+              <h1 className="text-2xl font-bold mb-4">Loan Applications</h1>
+              <p className="text-gray-600">Review and process client loan applications</p>
+            </div>
+          </EmployeeDashboardLayout>
+        </EmployeeProtectedRoute>
+      } />
+      <Route path="/employee/disbursements" element={
+        <EmployeeProtectedRoute>
+          <EmployeeDashboardLayout>
+            <div className="p-6">
+              <h1 className="text-2xl font-bold mb-4">Disbursements</h1>
+              <p className="text-gray-600">Manage fund releases and payments</p>
             </div>
           </EmployeeDashboardLayout>
         </EmployeeProtectedRoute>
@@ -68,9 +81,9 @@ const AuthenticatedApp = () => {
       <Route path="/employee/clients" element={
         <EmployeeProtectedRoute>
           <EmployeeDashboardLayout>
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900">Client Management</h2>
-              <p className="text-gray-600 mt-2">Manage client records and information</p>
+            <div className="p-6">
+              <h1 className="text-2xl font-bold mb-4">Client Management</h1>
+              <p className="text-gray-600">Update and manage client records</p>
             </div>
           </EmployeeDashboardLayout>
         </EmployeeProtectedRoute>
@@ -78,29 +91,19 @@ const AuthenticatedApp = () => {
       <Route path="/employee/blacklist" element={
         <EmployeeProtectedRoute>
           <EmployeeDashboardLayout>
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900">Blacklist Management</h2>
-              <p className="text-gray-600 mt-2">Manage blacklisted clients</p>
+            <div className="p-6">
+              <h1 className="text-2xl font-bold mb-4">Blacklist Management</h1>
+              <p className="text-gray-600">Manage restricted users and accounts</p>
             </div>
           </EmployeeDashboardLayout>
         </EmployeeProtectedRoute>
       } />
-      <Route path="/employee/credit-scores" element={
+      <Route path="/employee/credit" element={
         <EmployeeProtectedRoute>
           <EmployeeDashboardLayout>
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900">Credit Score Management</h2>
-              <p className="text-gray-600 mt-2">Monitor and adjust client credit scores</p>
-            </div>
-          </EmployeeDashboardLayout>
-        </EmployeeProtectedRoute>
-      } />
-      <Route path="/employee/reports" element={
-        <EmployeeProtectedRoute>
-          <EmployeeDashboardLayout>
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900">Reports & Analytics</h2>
-              <p className="text-gray-600 mt-2">Generate performance and analytics reports</p>
+            <div className="p-6">
+              <h1 className="text-2xl font-bold mb-4">Credit Score Management</h1>
+              <p className="text-gray-600">Monitor and adjust JBCS credit scores</p>
             </div>
           </EmployeeDashboardLayout>
         </EmployeeProtectedRoute>
@@ -108,9 +111,9 @@ const AuthenticatedApp = () => {
       <Route path="/employee/settings" element={
         <EmployeeProtectedRoute>
           <EmployeeDashboardLayout>
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900">Settings</h2>
-              <p className="text-gray-600 mt-2">Configure system settings and preferences</p>
+            <div className="p-6">
+              <h1 className="text-2xl font-bold mb-4">System Settings</h1>
+              <p className="text-gray-600">Administrative tools and configuration</p>
             </div>
           </EmployeeDashboardLayout>
         </EmployeeProtectedRoute>
@@ -171,9 +174,11 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AuthProvider>
-        <BrowserRouter>
-          <AuthenticatedApp />
-        </BrowserRouter>
+        <EmployeeAuthProvider>
+          <BrowserRouter>
+            <AuthenticatedApp />
+          </BrowserRouter>
+        </EmployeeAuthProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>

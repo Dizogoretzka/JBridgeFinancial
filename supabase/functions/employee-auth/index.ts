@@ -9,20 +9,19 @@ const corsHeaders = {
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response('ok', { headers: corsHeaders })
   }
 
   try {
+    const { username, password, action } = await req.json()
+
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const { username, password } = await req.json()
-
-    // Simple password check (in production, use proper hashing)
-    if (username === 'pius' && password === '10101010') {
-      // Get employee record
+    if (action === 'login') {
+      // Get employee by username
       const { data: employee, error } = await supabaseClient
         .from('employees')
         .select('*')
@@ -30,50 +29,42 @@ serve(async (req) => {
         .single()
 
       if (error || !employee) {
-        console.error('Employee lookup error:', error)
         return new Response(
-          JSON.stringify({ success: false, error: 'Employee not found' }),
-          { 
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 401 
-          }
+          JSON.stringify({ error: 'Invalid credentials' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
 
-      return new Response(
-        JSON.stringify({ 
-          success: true, 
-          employee: {
-            id: employee.id,
-            username: employee.username,
-            full_name: employee.full_name,
-            email: employee.email,
-            role: employee.role
-          }
-        }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200 
-        }
-      )
-    } else {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Invalid credentials' }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 401 
-        }
-      )
+      // Simple password check (in production, use proper bcrypt comparison)
+      if (password === '10101010' && username === 'pius') {
+        return new Response(
+          JSON.stringify({ 
+            employee: {
+              id: employee.id,
+              username: employee.username,
+              full_name: employee.full_name,
+              email: employee.email,
+              role: employee.role
+            }
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      } else {
+        return new Response(
+          JSON.stringify({ error: 'Invalid credentials' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
     }
 
-  } catch (error) {
-    console.error('Function error:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500 
-      }
+      JSON.stringify({ error: 'Invalid action' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+  } catch (error) {
+    return new Response(
+      JSON.stringify({ error: 'Internal server error' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }
 })
