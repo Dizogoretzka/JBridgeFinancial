@@ -67,7 +67,7 @@ const SignInModal = ({ open, onOpenChange, onSwitchToRegister }: SignInModalProp
       <DialogContent className="w-full max-w-md mx-4 sm:mx-auto">
         <DialogHeader>
           <DialogTitle className="text-center text-xl font-semibold text-slate-800">
-            Welcome back
+            Welcome back, Client
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 px-2">
@@ -106,6 +106,15 @@ const SignInModal = ({ open, onOpenChange, onSwitchToRegister }: SignInModalProp
             disabled={isLoading}
           >
             {isLoading ? "Signing In..." : "Sign In"}
+          </Button>
+          <Button 
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={handleSwitchToRegister}
+            disabled={isLoading}
+          >
+            Sign Up
           </Button>
           <div className="text-center text-sm text-gray-600">
             Don't have an account?{" "}

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -98,7 +99,7 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
       <DialogContent className="w-full max-w-md mx-4 sm:mx-auto max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-center text-xl font-semibold text-slate-800">
-            Create your account
+            Create your client account
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 px-2">
@@ -160,6 +161,15 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
             disabled={isLoading}
           >
             {isLoading ? "Creating Account..." : "Sign up"}
+          </Button>
+          <Button 
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={handleSwitchToSignIn}
+            disabled={isLoading}
+          >
+            Sign In
           </Button>
           <div className="text-center text-sm text-gray-600 pb-2">
             Already have an account?{" "}
