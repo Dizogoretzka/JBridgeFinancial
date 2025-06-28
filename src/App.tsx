@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,9 +6,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { EmployeeProtectedRoute } from "@/components/employee/EmployeeProtectedRoute";
-import { EmployeeDashboardLayout } from "@/components/employee/EmployeeDashboardLayout";
-import EmployeeDashboard from "@/pages/employee/EmployeeDashboard";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Blacklist from "./pages/Blacklist";
