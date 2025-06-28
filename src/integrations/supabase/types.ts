@@ -9,6 +9,121 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      blacklist: {
+        Row: {
+          blacklisted_by: string | null
+          created_at: string
+          full_name: string
+          id: string
+          id_number: string
+          phone_number: string | null
+          reason: string | null
+        }
+        Insert: {
+          blacklisted_by?: string | null
+          created_at?: string
+          full_name: string
+          id?: string
+          id_number: string
+          phone_number?: string | null
+          reason?: string | null
+        }
+        Update: {
+          blacklisted_by?: string | null
+          created_at?: string
+          full_name?: string
+          id?: string
+          id_number?: string
+          phone_number?: string | null
+          reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blacklist_blacklisted_by_fkey"
+            columns: ["blacklisted_by"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employees: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          password_hash: string
+          role: string | null
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          password_hash: string
+          role?: string | null
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          password_hash?: string
+          role?: string | null
+          updated_at?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      loan_applications: {
+        Row: {
+          amount: number
+          applied_at: string
+          id: string
+          purpose: string | null
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          applied_at?: string
+          id?: string
+          purpose?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          applied_at?: string
+          id?: string
+          purpose?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loan_applications_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string

@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,6 +17,7 @@ import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Documents from "./pages/dashboard/Documents";
 import Profile from "./pages/dashboard/Profile";
+import EmployeeLogin from "./pages/EmployeeLogin";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +43,7 @@ const AuthenticatedApp = () => {
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/terms-of-service" element={<TermsOfService />} />
       <Route path="/careers" element={<Careers />} />
+      <Route path="/employee-login" element={<EmployeeLogin />} />
       
       {/* Protected dashboard routes */}
       <Route path="/dashboard" element={

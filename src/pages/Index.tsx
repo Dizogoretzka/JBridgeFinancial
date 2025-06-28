@@ -7,6 +7,8 @@ import { Check, Shield, Clock, CreditCard, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import SignInModal from "@/components/auth/SignInModal";
 import RegisterModal from "@/components/auth/RegisterModal";
+import { PortalDropdown } from "@/components/ui/portal-dropdown";
+
 const Index = () => {
   const [loanAmount, setLoanAmount] = useState([5000]);
   const [loanTerm, setLoanTerm] = useState([12]);
@@ -43,6 +45,7 @@ const Index = () => {
               </h1>
             </div>
             <div className="flex space-x-4">
+              <PortalDropdown />
               <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-slate-800" onClick={() => setShowSignIn(true)}>
                 Sign In
               </Button>
@@ -510,4 +513,5 @@ const Index = () => {
       <RegisterModal open={showRegister} onOpenChange={setShowRegister} onSwitchToSignIn={handleSwitchToSignIn} />
     </div>;
 };
+
 export default Index;
