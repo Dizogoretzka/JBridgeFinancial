@@ -9,7 +9,7 @@ import { toast } from "@/components/ui/use-toast";
 
 const EmployeeLogin = () => {
   const [loginData, setLoginData] = useState({
-    email: "",
+    id: "",
     password: ""
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -19,22 +19,27 @@ const EmployeeLogin = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Placeholder login logic - replace with actual authentication
     try {
-      // Simulate login process
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast({
-        title: "Login Successful",
-        description: "Welcome to the Employee Portal",
-      });
-      
-      // Navigate to employee dashboard or appropriate page
-      navigate("/");
+      // Check if credentials match the specified values
+      if (loginData.id === "pius" && loginData.password === "10101010") {
+        toast({
+          title: "Login Successful",
+          description: "Welcome to the Employee Portal",
+        });
+        
+        // Navigate to employee dashboard or appropriate page
+        navigate("/");
+      } else {
+        toast({
+          title: "Login Failed",
+          description: "Invalid ID or password. Please try again.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       toast({
         title: "Login Failed",
-        description: "Please check your credentials and try again.",
+        description: "An error occurred. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -59,13 +64,13 @@ const EmployeeLogin = () => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="id">Employee ID</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your work email"
-                  value={loginData.email}
-                  onChange={(e) => setLoginData(prev => ({ ...prev, email: e.target.value }))}
+                  id="id"
+                  type="text"
+                  placeholder="Enter your employee ID"
+                  value={loginData.id}
+                  onChange={(e) => setLoginData(prev => ({ ...prev, id: e.target.value }))}
                   className="w-full"
                   required
                   disabled={isLoading}
