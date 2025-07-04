@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
@@ -54,7 +55,7 @@ export const DashboardSidebar = () => {
             <SidebarMenu>
               {menuItems.map(item => <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <NavLink to={item.url} className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${isActive(item.url) ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700 hover:text-white'}`}>
+                    <NavLink to={item.url} className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${isActive(item.url) ? 'bg-blue-600 text-white' : 'text-blue-100 hover:bg-blue-600 hover:text-white'}`}>
                       <item.icon className="h-5 w-5" />
                       <span>{item.title}</span>
                     </NavLink>
