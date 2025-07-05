@@ -42,25 +42,27 @@ export const DashboardSidebar = () => {
           <img 
             src="/lovable-uploads/91f08756-7121-4d45-8a4e-ad048eb44dc0.png" 
             alt="J Bridge Logo" 
-            className="w-8 h-8"
+            className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0"
           />
-          <span className="font-semibold text-lg">J Bridge</span>
+          <span className="font-semibold text-sm sm:text-lg truncate">J Bridge</span>
         </div>
       </SidebarHeader>
       
       <SidebarContent className="bg-sky-950">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-blue-100">Main Menu</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-blue-100 text-xs sm:text-sm">Main Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map(item => <SidebarMenuItem key={item.title}>
+              {menuItems.map(item => 
+                <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <NavLink to={item.url} className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${isActive(item.url) ? 'bg-blue-600 text-white' : 'text-blue-100 hover:bg-blue-600 hover:text-white'}`}>
-                      <item.icon className="h-5 w-5" />
-                      <span>{item.title}</span>
+                    <NavLink to={item.url} className={`flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-lg transition-colors ${isActive(item.url) ? 'bg-blue-600 text-white' : 'text-blue-100 hover:bg-blue-600 hover:text-white'}`}>
+                      <item.icon className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                      <span className="text-sm sm:text-base truncate">{item.title}</span>
                     </NavLink>
                   </SidebarMenuButton>
-                </SidebarMenuItem>)}
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -72,55 +74,55 @@ export const DashboardSidebar = () => {
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
-export const DashboardLayout = ({
-  children
-}: DashboardLayoutProps) => {
-  const {
-    user,
-    signOut
-  } = useAuth();
+
+export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
   };
+  
   const getUserInitials = () => {
     if (user?.user_metadata?.full_name) {
       return user.user_metadata.full_name.split(' ').map((name: string) => name[0]).join('').toUpperCase();
     }
     return user?.email?.[0]?.toUpperCase() || 'U';
   };
-  return <SidebarProvider>
+  
+  return (
+    <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50">
         <DashboardSidebar />
         
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col min-w-0">
           {/* Top Navigation */}
-          <header className="bg-white border-b border-gray-200 px-6 py-4">
+          <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <SidebarTrigger className="lg:hidden" />
-                <h1 className="text-xl font-semibold text-gray-800">Client Dashboard</h1>
+              <div className="flex items-center space-x-2 sm:space-x-4 min-w-0">
+                <SidebarTrigger className="lg:hidden flex-shrink-0" />
+                <h1 className="text-lg sm:text-xl font-semibold text-gray-800 truncate">Client Dashboard</h1>
               </div>
               
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                      <Avatar className="h-10 w-10">
-                        <AvatarFallback className="bg-blue-600 text-white">
+                    <Button variant="ghost" className="relative h-8 w-8 sm:h-10 sm:w-10 rounded-full">
+                      <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
+                        <AvatarFallback className="bg-blue-600 text-white text-xs sm:text-sm">
                           {getUserInitials()}
                         </AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56" align="end">
+                  <DropdownMenuContent className="w-48 sm:w-56" align="end">
                     <div className="flex items-center justify-start gap-2 p-2">
-                      <div className="flex flex-col space-y-1 leading-none">
-                        <p className="font-medium text-sm">
+                      <div className="flex flex-col space-y-1 leading-none min-w-0">
+                        <p className="font-medium text-xs sm:text-sm truncate">
                           {user?.user_metadata?.full_name || user?.email}
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground truncate">
                           {user?.email}
                         </p>
                       </div>
@@ -136,10 +138,13 @@ export const DashboardLayout = ({
           </header>
           
           {/* Main Content */}
-          <main className="flex-1 p-6">
-            {children}
+          <main className="flex-1 p-4 sm:p-6 overflow-auto">
+            <div className="max-w-7xl mx-auto w-full">
+              {children}
+            </div>
           </main>
         </div>
       </div>
-    </SidebarProvider>;
+    </SidebarProvider>
+  );
 };
