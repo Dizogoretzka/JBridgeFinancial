@@ -56,7 +56,7 @@ export const DashboardSidebar = () => {
               {menuItems.map(item => 
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <NavLink to={item.url} className={`flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-lg transition-colors ${isActive(item.url) ? 'bg-blue-600 text-white' : 'text-blue-100 hover:bg-blue-600 hover:text-white'}`}>
+                    <NavLink to={item.url} className={`flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-lg transition-colors ${isActive(item.url) ? 'bg-blue-600 text-white' : 'text-blue-100 hover:bg-blue-500 hover:text-white'}`}>
                       <item.icon className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
                       <span className="text-sm sm:text-base truncate">{item.title}</span>
                     </NavLink>

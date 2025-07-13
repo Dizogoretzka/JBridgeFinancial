@@ -1,13 +1,66 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Shield, Search, Info } from "lucide-react";
+import { Shield, Search, Info, User, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+
+interface BlacklistEntry {
+  id: string;
+  id_number: string;
+  full_name: string;
+  phone_number: string | null;
+  reason: string | null;
+  created_at: string;
+}
 
 const Blacklist = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+
+  // Fetch blacklist data
+  const { data: blacklistEntries, isLoading, refetch } = useQuery({
+    queryKey: ['blacklist-entries'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('blacklist')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Real-time subscription for blacklist updates
+  useEffect(() => {
+    const channel = supabase
+      .channel('blacklist-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'blacklist'
+        },
+        () => {
+          refetch();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [refetch]);
+
+  // Filter entries based on search query
+  const filteredEntries = blacklistEntries?.filter(entry =>
+    entry.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    entry.id_number.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
 
   return (
     <div className="min-h-screen bg-white">
@@ -65,22 +118,86 @@ const Blacklist = () => {
       {/* Blacklist Results Section */}
       <section className="py-12 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Card>
-            <CardContent className="p-8">
-              <div className="text-center">
-                <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          {isLoading ? (
+            <Card>
+              <CardContent className="p-8">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800 mx-auto mb-4"></div>
+                  <p className="text-gray-600">Loading blacklist entries...</p>
+                </div>
+              </CardContent>
+            </Card>
+          ) : searchQuery && filteredEntries.length === 0 ? (
+            <Card>
+              <CardContent className="p-8">
+                <div className="text-center">
+                  <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    No results found for "{searchQuery}"
+                  </h3>
+                  <p className="text-gray-600">
+                    The person you're looking for is not currently on our blacklist.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          ) : !searchQuery ? (
+            <Card>
+              <CardContent className="p-8">
+                <div className="text-center">
+                  <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    Enter a name to search
+                  </h3>
+                  <p className="text-gray-600">
+                    Use the search bar above to check if someone is on our blacklist registry.
+                  </p>
+                  {blacklistEntries && blacklistEntries.length > 0 && (
+                    <p className="text-sm text-gray-500 mt-2">
+                      Currently {blacklistEntries.length} entries in registry
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              <div className="mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {searchQuery ? `No results found for "${searchQuery}"` : "Enter a name to search"}
+                  Search Results ({filteredEntries.length} found)
                 </h3>
-                <p className="text-gray-600">
-                  {searchQuery 
-                    ? "The person you're looking for is not currently on our blacklist." 
-                    : "Use the search bar above to check if someone is on our blacklist registry."
-                  }
-                </p>
               </div>
-            </CardContent>
-          </Card>
+              {filteredEntries.map((entry) => (
+                <Card key={entry.id} className="border-l-4 border-l-red-500">
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center mb-2">
+                          <User className="h-5 w-5 text-red-500 mr-2" />
+                          <h4 className="text-lg font-semibold text-gray-900">
+                            {entry.full_name}
+                          </h4>
+                        </div>
+                        <div className="space-y-1 text-sm text-gray-600">
+                          <p><strong>ID Number:</strong> {entry.id_number}</p>
+                          {entry.phone_number && (
+                            <p><strong>Phone:</strong> {entry.phone_number}</p>
+                          )}
+                          {entry.reason && (
+                            <p><strong>Reason:</strong> {entry.reason}</p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center text-xs text-gray-500">
+                        <Calendar className="h-4 w-4 mr-1" />
+                        {new Date(entry.created_at).toLocaleDateString()}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
