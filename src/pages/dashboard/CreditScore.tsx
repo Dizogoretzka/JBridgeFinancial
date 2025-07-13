@@ -7,7 +7,33 @@ import { TrendingUp, TrendingDown, Minus, RefreshCw } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
+
+// Define the type for credit score factors
+interface CreditScoreFactors {
+  payment_history: number;
+  credit_utilization: number;
+  credit_length: number;
+  credit_types: number;
+  new_inquiries: number;
+}
+
+// Helper function to safely parse factors
+const parseFactors = (factors: any): CreditScoreFactors | null => {
+  if (!factors || typeof factors !== 'object') return null;
+  
+  try {
+    return {
+      payment_history: Number(factors.payment_history) || 0,
+      credit_utilization: Number(factors.credit_utilization) || 0,
+      credit_length: Number(factors.credit_length) || 0,
+      credit_types: Number(factors.credit_types) || 0,
+      new_inquiries: Number(factors.new_inquiries) || 0,
+    };
+  } catch {
+    return null;
+  }
+};
 
 const CreditScore = () => {
   const { user } = useAuth();
@@ -94,17 +120,10 @@ const CreditScore = () => {
     
     try {
       // Simulate credit score calculation
-      // In a real app, this would involve complex calculations based on:
-      // - Payment history
-      // - Credit utilization
-      // - Length of credit history
-      // - Types of credit
-      // - New credit inquiries
-      
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate processing time
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
       const baseScore = 650;
-      const randomVariation = Math.floor(Math.random() * 100) - 50; // -50 to +50
+      const randomVariation = Math.floor(Math.random() * 100) - 50;
       const newScore = Math.max(300, Math.min(850, baseScore + randomVariation));
       
       const factors = {
@@ -143,6 +162,9 @@ const CreditScore = () => {
       setCalculating(false);
     }
   };
+
+  // Parse factors safely
+  const currentFactors = currentScore ? parseFactors(currentScore.factors) : null;
 
   return (
     <div className="space-y-8">
@@ -216,42 +238,42 @@ const CreditScore = () => {
             <CardTitle>Score Factors</CardTitle>
           </CardHeader>
           <CardContent>
-            {currentScore?.factors ? (
+            {currentFactors ? (
               <div className="space-y-4">
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>Payment History</span>
-                    <span>{currentScore.factors.payment_history}%</span>
+                    <span>{currentFactors.payment_history}%</span>
                   </div>
-                  <Progress value={currentScore.factors.payment_history} className="h-2" />
+                  <Progress value={currentFactors.payment_history} className="h-2" />
                 </div>
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>Credit Utilization</span>
-                    <span>{currentScore.factors.credit_utilization}%</span>
+                    <span>{currentFactors.credit_utilization}%</span>
                   </div>
-                  <Progress value={currentScore.factors.credit_utilization} className="h-2" />
+                  <Progress value={currentFactors.credit_utilization} className="h-2" />
                 </div>
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>Credit History Length</span>
-                    <span>{currentScore.factors.credit_length}%</span>
+                    <span>{currentFactors.credit_length}%</span>
                   </div>
-                  <Progress value={currentScore.factors.credit_length} className="h-2" />
+                  <Progress value={currentFactors.credit_length} className="h-2" />
                 </div>
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>Credit Mix</span>
-                    <span>{currentScore.factors.credit_types}%</span>
+                    <span>{currentFactors.credit_types}%</span>
                   </div>
-                  <Progress value={currentScore.factors.credit_types} className="h-2" />
+                  <Progress value={currentFactors.credit_types} className="h-2" />
                 </div>
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>New Credit</span>
-                    <span>{currentScore.factors.new_inquiries}%</span>
+                    <span>{currentFactors.new_inquiries}%</span>
                   </div>
-                  <Progress value={currentScore.factors.new_inquiries} className="h-2" />
+                  <Progress value={currentFactors.new_inquiries} className="h-2" />
                 </div>
               </div>
             ) : (
@@ -272,7 +294,7 @@ const CreditScore = () => {
         <CardContent>
           {creditScores && creditScores.length > 0 ? (
             <div className="space-y-4">
-              {creditScores.map((score, index) => (
+              {creditScores.map((score) => (
                 <div key={score.id} className="flex items-center justify-between p-4 border rounded-lg">
                   <div>
                     <div className={`text-2xl font-bold ${getScoreColor(score.score)}`}>
