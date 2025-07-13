@@ -2,26 +2,143 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
 import { CreditCard, FileText, TrendingUp, DollarSign } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const [documentsCount, setDocumentsCount] = useState(0);
+  const [loansCount, setLoansCount] = useState(0);
+  const [creditScore, setCreditScore] = useState(650);
+
+  // Fetch user documents count
+  const { data: documents } = useQuery({
+    queryKey: ['user-documents', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data, error } = await supabase
+        .from('documents')
+        .select('*')
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user,
+  });
+
+  // Fetch user loans count
+  const { data: loans } = useQuery({
+    queryKey: ['user-loans', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data, error } = await supabase
+        .from('loan_applications')
+        .select('*')
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user,
+  });
+
+  // Fetch user credit score
+  const { data: creditScores } = useQuery({
+    queryKey: ['user-credit-score', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data, error } = await supabase
+        .from('credit_scores')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('calculated_at', { ascending: false })
+        .limit(1);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user,
+  });
+
+  // Set up real-time subscriptions
+  useEffect(() => {
+    if (!user) return;
+
+    // Documents subscription
+    const documentsChannel = supabase
+      .channel('documents-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'documents',
+          filter: `user_id=eq.${user.id}`
+        },
+        () => {
+          // Refetch documents when changes occur
+          setDocumentsCount(documents?.length || 0);
+        }
+      )
+      .subscribe();
+
+    // Loans subscription
+    const loansChannel = supabase
+      .channel('loans-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'loan_applications',
+          filter: `user_id=eq.${user.id}`
+        },
+        () => {
+          // Refetch loans when changes occur
+          setLoansCount(loans?.length || 0);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(documentsChannel);
+      supabase.removeChannel(loansChannel);
+    };
+  }, [user, documents, loans]);
+
+  // Update counts when data changes
+  useEffect(() => {
+    setDocumentsCount(documents?.length || 0);
+  }, [documents]);
+
+  useEffect(() => {
+    setLoansCount(loans?.length || 0);
+  }, [loans]);
+
+  useEffect(() => {
+    if (creditScores && creditScores.length > 0) {
+      setCreditScore(creditScores[0].score);
+    }
+  }, [creditScores]);
 
   const stats = [
     {
       title: "Active Loans",
-      value: "0",
+      value: loansCount.toString(),
       icon: CreditCard,
       color: "text-blue-600",
     },
     {
       title: "Documents Uploaded",
-      value: "0",
+      value: documentsCount.toString(),
       icon: FileText,
       color: "text-green-600",
     },
     {
       title: "J Bridge Credit Score",
-      value: "650",
+      value: creditScore.toString(),
       icon: TrendingUp,
       color: "text-purple-600",
     },
@@ -86,9 +203,31 @@ const Dashboard = () => {
             <CardTitle>Recent Activity</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-center py-8 text-gray-500">
-              <p>No recent activity to display</p>
-              <p className="text-sm">Complete your profile to get started</p>
+            <div className="space-y-3">
+              {documents && documents.length > 0 ? (
+                documents.slice(0, 3).map((doc) => (
+                  <div key={doc.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                    <div>
+                      <p className="text-sm font-medium">{doc.file_name}</p>
+                      <p className="text-xs text-gray-600">
+                        {new Date(doc.uploaded_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <span className={`text-xs px-2 py-1 rounded ${
+                      doc.status === 'approved' ? 'bg-green-100 text-green-800' :
+                      doc.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {doc.status}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-4 text-gray-500">
+                  <p>No recent activity to display</p>
+                  <p className="text-sm">Complete your profile to get started</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

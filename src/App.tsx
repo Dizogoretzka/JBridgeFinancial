@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,6 +18,8 @@ import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Documents from "./pages/dashboard/Documents";
 import Profile from "./pages/dashboard/Profile";
+import Loans from "./pages/dashboard/Loans";
+import CreditScore from "./pages/dashboard/CreditScore";
 import EmployeeLogin from "./pages/EmployeeLogin";
 
 const queryClient = new QueryClient();
@@ -70,20 +73,14 @@ const AuthenticatedApp = () => {
       <Route path="/dashboard/loans" element={
         <ProtectedRoute>
           <DashboardLayout>
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900">Loan Management</h2>
-              <p className="text-gray-600 mt-2">Coming soon - Apply and manage your loans</p>
-            </div>
+            <Loans />
           </DashboardLayout>
         </ProtectedRoute>
       } />
       <Route path="/dashboard/credit" element={
         <ProtectedRoute>
           <DashboardLayout>
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900">Credit Score</h2>
-              <p className="text-gray-600 mt-2">Track your J Bridge Credit Score (JBCS)</p>
-            </div>
+            <CreditScore />
           </DashboardLayout>
         </ProtectedRoute>
       } />

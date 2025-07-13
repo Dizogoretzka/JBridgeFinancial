@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,12 +8,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 const Profile = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: user?.user_metadata?.full_name || '',
+    fullName: '',
     dateOfBirth: '',
     gender: '',
     nationality: 'Namibian',
@@ -23,22 +25,96 @@ const Profile = () => {
     address: '',
   });
 
+  // Fetch existing profile data
+  const { data: profile, refetch: refetchProfile } = useQuery({
+    queryKey: ['profile', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  // Update form data when profile is loaded
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        fullName: profile.full_name || '',
+        dateOfBirth: profile.date_of_birth || '',
+        gender: profile.gender || '',
+        nationality: profile.nationality || 'Namibian',
+        idNumber: profile.id_number || '',
+        phoneNumber: profile.phone_number || '',
+        email: user?.email || '',
+        address: profile.address || '',
+      });
+    } else if (user) {
+      setFormData(prev => ({
+        ...prev,
+        fullName: user.user_metadata?.full_name || '',
+        email: user.email || '',
+      }));
+    }
+  }, [profile, user]);
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) return;
+
     setLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const profileData = {
+        id: user.id,
+        full_name: formData.fullName,
+        date_of_birth: formData.dateOfBirth || null,
+        gender: formData.gender || null,
+        nationality: formData.nationality,
+        id_number: formData.idNumber || null,
+        phone_number: formData.phoneNumber || null,
+        address: formData.address || null,
+        updated_at: new Date().toISOString(),
+      };
+
+      const { error } = await supabase
+        .from('profiles')
+        .upsert(profileData, {
+          onConflict: 'id'
+        });
+
+      if (error) throw error;
+
       toast({
         title: "Profile Updated",
         description: "Your profile information has been saved successfully",
       });
-    }, 1000);
+
+      // Refetch profile data
+      refetchProfile();
+      
+    } catch (error) {
+      console.error('Profile update error:', error);
+      toast({
+        title: "Update Failed",
+        description: "There was an error updating your profile. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -80,7 +156,10 @@ const Profile = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="gender">Gender</Label>
-                <Select onValueChange={(value) => handleInputChange('gender', value)}>
+                <Select 
+                  value={formData.gender} 
+                  onValueChange={(value) => handleInputChange('gender', value)}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select gender" />
                   </SelectTrigger>
