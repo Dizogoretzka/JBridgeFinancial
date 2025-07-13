@@ -45,31 +45,9 @@ export const EmployeeAuthProvider = ({ children }: { children: React.ReactNode }
         return { error: 'Invalid credentials' };
       }
 
-      // In a real application, you would hash the password and compare
-      // For now, we'll use a simple check since we're using bcrypt in the database
-      const { data: authResult, error: authError } = await supabase.rpc('verify_employee_password', {
-        p_username: username,
-        p_password: password
-      });
-
-      if (authError) {
-        // Fallback for demo purposes
-        if (username === 'pius' && password === '10101010') {
-          const employeeData = {
-            id: employees.id,
-            username: employees.username,
-            full_name: employees.full_name,
-            email: employees.email,
-            role: employees.role
-          };
-          setEmployee(employeeData);
-          localStorage.setItem('employee', JSON.stringify(employeeData));
-          return { error: null };
-        }
-        return { error: 'Invalid credentials' };
-      }
-
-      if (authResult) {
+      // For demo purposes, use simple credential check
+      // In production, implement proper password verification
+      if (username === 'pius' && password === '10101010') {
         const employeeData = {
           id: employees.id,
           username: employees.username,

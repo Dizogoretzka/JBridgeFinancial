@@ -38,23 +38,37 @@ const EmployeeLoans = () => {
   const [reviewNotes, setReviewNotes] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
 
-  // Fetch all loan applications
+  // Fetch all loan applications with user profiles
   const { data: applications, isLoading, refetch } = useQuery({
     queryKey: ['employee-loan-applications'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('loan_applications')
-        .select(`
-          *,
-          profiles (
-            full_name,
-            phone_number
-          )
-        `)
+        .select('*')
         .order('applied_at', { ascending: false });
       
       if (error) throw error;
-      return data || [];
+      
+      // Fetch profiles separately to avoid join issues
+      if (data && data.length > 0) {
+        const userIds = data.map(app => app.user_id);
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, full_name, phone_number')
+          .in('id', userIds);
+        
+        if (!profilesError && profiles) {
+          return data.map(app => ({
+            ...app,
+            profiles: profiles.find(p => p.id === app.user_id) || { full_name: 'Unknown', phone_number: 'N/A' }
+          }));
+        }
+      }
+      
+      return data?.map(app => ({
+        ...app,
+        profiles: { full_name: 'Unknown', phone_number: 'N/A' }
+      })) || [];
     },
   });
 
