@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
+import { useEmployeeAuth } from "@/hooks/useEmployeeAuth";
 
 const EmployeeLogin = () => {
   const [loginData, setLoginData] = useState({
@@ -14,27 +15,27 @@ const EmployeeLogin = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { signIn } = useEmployeeAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      // Check if credentials match the specified values
-      if (loginData.id === "pius" && loginData.password === "10101010") {
+      const { error } = await signIn(loginData.id, loginData.password);
+      
+      if (error) {
+        toast({
+          title: "Login Failed",
+          description: error,
+          variant: "destructive",
+        });
+      } else {
         toast({
           title: "Login Successful",
           description: "Welcome to the Employee Portal",
         });
-        
-        // Navigate to employee dashboard or appropriate page
-        navigate("/");
-      } else {
-        toast({
-          title: "Login Failed",
-          description: "Invalid ID or password. Please try again.",
-          variant: "destructive",
-        });
+        navigate("/employee/dashboard");
       }
     } catch (error) {
       toast({

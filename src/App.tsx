@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,6 +20,13 @@ import Profile from "./pages/dashboard/Profile";
 import Loans from "./pages/dashboard/Loans";
 import CreditScore from "./pages/dashboard/CreditScore";
 import EmployeeLogin from "./pages/EmployeeLogin";
+import EmployeeDashboard from "./pages/employee/EmployeeDashboard";
+import EmployeeClients from "./pages/employee/EmployeeClients";
+import EmployeeLoans from "./pages/employee/EmployeeLoans";
+import EmployeeBlacklist from "./pages/employee/EmployeeBlacklist";
+import { EmployeeAuthProvider } from "@/hooks/useEmployeeAuth";
+import { EmployeeProtectedRoute } from "@/components/employee/EmployeeProtectedRoute";
+import { EmployeeDashboardLayout } from "@/components/employee/EmployeeDashboardLayout";
 
 const queryClient = new QueryClient();
 
@@ -48,7 +54,7 @@ const AuthenticatedApp = () => {
       <Route path="/careers" element={<Careers />} />
       <Route path="/employee-login" element={<EmployeeLogin />} />
       
-      {/* Protected dashboard routes */}
+      {/* Protected client dashboard routes */}
       <Route path="/dashboard" element={
         <ProtectedRoute>
           <DashboardLayout>
@@ -84,6 +90,36 @@ const AuthenticatedApp = () => {
           </DashboardLayout>
         </ProtectedRoute>
       } />
+
+      {/* Protected employee dashboard routes */}
+      <Route path="/employee/dashboard" element={
+        <EmployeeProtectedRoute>
+          <EmployeeDashboardLayout>
+            <EmployeeDashboard />
+          </EmployeeDashboardLayout>
+        </EmployeeProtectedRoute>
+      } />
+      <Route path="/employee/clients" element={
+        <EmployeeProtectedRoute>
+          <EmployeeDashboardLayout>
+            <EmployeeClients />
+          </EmployeeDashboardLayout>
+        </EmployeeProtectedRoute>
+      } />
+      <Route path="/employee/loans" element={
+        <EmployeeProtectedRoute>
+          <EmployeeDashboardLayout>
+            <EmployeeLoans />
+          </EmployeeDashboardLayout>
+        </EmployeeProtectedRoute>
+      } />
+      <Route path="/employee/blacklist" element={
+        <EmployeeProtectedRoute>
+          <EmployeeDashboardLayout>
+            <EmployeeBlacklist />
+          </EmployeeDashboardLayout>
+        </EmployeeProtectedRoute>
+      } />
       
       {/* Catch-all route */}
       <Route path="*" element={<NotFound />} />
@@ -98,9 +134,11 @@ const App = () => {
         <Toaster />
         <Sonner />
         <AuthProvider>
-          <BrowserRouter>
-            <AuthenticatedApp />
-          </BrowserRouter>
+          <EmployeeAuthProvider>
+            <BrowserRouter>
+              <AuthenticatedApp />
+            </BrowserRouter>
+          </EmployeeAuthProvider>
         </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
