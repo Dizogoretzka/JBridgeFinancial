@@ -20,10 +20,19 @@ const Index = () => {
   const formatNAD = (amount: number) => {
     return `N$${amount.toLocaleString()}`;
   };
-  const traditionalMonthlyPayment = Math.round(loanAmount[0] * 1.3 / loanTerm[0]);
-  const traditionalTotalCost = Math.round(loanAmount[0] * 1.3);
-  const bridgeMonthlyPayment = Math.round((loanAmount[0] + 249 * loanTerm[0]) / loanTerm[0]);
-  const bridgeTotalCost = loanAmount[0] + 249 * loanTerm[0];
+  // Enhanced loan calculation with proper interest calculation
+  const monthlyInterestRate = 0.30 / 12; // 30% annual rate / 12 months
+  const amount = loanAmount[0];
+  const term = loanTerm[0];
+  
+  // Traditional loan calculation using compound interest formula
+  const traditionalMonthlyPayment = Math.round(amount * (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, term)) / (Math.pow(1 + monthlyInterestRate, term) - 1));
+  const traditionalTotalCost = traditionalMonthlyPayment * term;
+  
+  // J Bridge subscription model with fixed subscription fee
+  const subscriptionFee = 299;
+  const bridgeMonthlyPayment = Math.round((amount / term) + subscriptionFee);
+  const bridgeTotalCost = amount + (subscriptionFee * term);
   const totalSavings = traditionalTotalCost - bridgeTotalCost;
   const handleSwitchToRegister = () => {
     setShowSignIn(false);
@@ -223,7 +232,7 @@ const Index = () => {
                           <span className="text-slate-600">Total Cost:</span>
                           <span className="font-bold text-green-600">{formatNAD(bridgeTotalCost)}</span>
                         </div>
-                        <p className="text-xs text-green-500">💡 Subscription is just N$249 per month</p>
+                        <p className="text-xs text-green-500">💡 Subscription is just N$299 per month</p>
                       </div>
                     </CardContent>
                   </Card>

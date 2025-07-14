@@ -64,18 +64,32 @@ const RegisterModal = ({ open, onOpenChange, onSwitchToSignIn }: RegisterModalPr
       });
 
       if (error) {
-        toast({
-          title: "Sign Up Error",
-          description: error.message,
-          variant: "destructive",
-        });
+        if (error.message.includes("already registered") || error.message.includes("User already registered")) {
+          toast({
+            title: "Email Already Registered",
+            description: "This email address is already registered. Please use a different email or sign in instead.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Sign Up Error",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
       } else {
         toast({
           title: "Success",
           description: "Account created successfully! Please check your email to verify your account.",
         });
         onOpenChange(false);
-        // Do not navigate to dashboard on sign up - only after email verification
+        // Clear form
+        setFormData({
+          fullName: "",
+          email: "",
+          password: "",
+          repeatPassword: ""
+        });
       }
     } catch (error) {
       toast({

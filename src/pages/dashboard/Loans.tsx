@@ -13,10 +13,12 @@ import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import LoanCalculator from "@/components/calculator/LoanCalculator";
 
 const Loans = () => {
   const { user } = useAuth();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [showCalculator, setShowCalculator] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     amount: '',
@@ -25,6 +27,21 @@ const Loans = () => {
     monthlyIncome: '',
     employmentStatus: '',
   });
+
+  const handleLoanFromCalculator = (loanData: {
+    amount: number;
+    term: number;
+    monthlyPayment: number;
+    totalCost: number;
+  }) => {
+    setFormData(prev => ({
+      ...prev,
+      amount: loanData.amount.toString(),
+      loanTerm: loanData.term.toString(),
+    }));
+    setShowCalculator(false);
+    setIsDialogOpen(true);
+  };
 
   // Fetch user's loan applications
   const { data: loans, refetch: refetchLoans } = useQuery({
@@ -98,7 +115,7 @@ const Loans = () => {
         description: "Your loan application has been submitted successfully",
       });
 
-      // Reset form
+      // Reset form and clear input fields
       setFormData({
         amount: '',
         purpose: '',
@@ -165,12 +182,21 @@ const Loans = () => {
             Apply for loans and track your applications.
           </p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700">
-              <Plus className="h-4 w-4 mr-2" />
-              Apply for Loan
-            </Button>
+        <div className="flex space-x-2">
+          <Button 
+            onClick={() => setShowCalculator(true)}
+            variant="outline"
+            className="bg-green-600 hover:bg-green-700 text-white border-green-600"
+          >
+            <TrendingUp className="h-4 w-4 mr-2" />
+            Loan Calculator
+          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-blue-600 hover:bg-blue-700">
+                <Plus className="h-4 w-4 mr-2" />
+                Apply for Loan
+              </Button>
           </DialogTrigger>
           <DialogContent className="max-w-md">
             <DialogHeader>
@@ -270,6 +296,7 @@ const Loans = () => {
             </form>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -341,6 +368,16 @@ const Loans = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Loan Calculator Modal */}
+      <Dialog open={showCalculator} onOpenChange={setShowCalculator}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Loan Calculator</DialogTitle>
+          </DialogHeader>
+          <LoanCalculator onApplyLoan={handleLoanFromCalculator} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

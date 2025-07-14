@@ -6,14 +6,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     dateOfBirth: '',
@@ -43,6 +48,31 @@ const Profile = () => {
     },
     enabled: !!user,
   });
+
+  // Set up real-time subscription for profile updates
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel('profile-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${user.id}`
+        },
+        () => {
+          refetchProfile();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, refetchProfile]);
 
   // Update form data when profile is loaded
   useEffect(() => {
@@ -105,6 +135,18 @@ const Profile = () => {
       // Refetch profile data
       refetchProfile();
       
+      // Clear form fields after successful update
+      setFormData({
+        fullName: '',
+        dateOfBirth: '',
+        gender: '',
+        nationality: 'Namibian',
+        idNumber: '',
+        phoneNumber: '',
+        email: user?.email || '',
+        address: '',
+      });
+      
     } catch (error) {
       console.error('Profile update error:', error);
       toast({
@@ -114,6 +156,46 @@ const Profile = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteProfile = async () => {
+    if (!user) return;
+
+    setDeleteLoading(true);
+
+    try {
+      // Delete profile data
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', user.id);
+
+      if (profileError) throw profileError;
+
+      // Delete user account
+      const { error: userError } = await supabase.auth.admin.deleteUser(user.id);
+
+      if (userError) throw userError;
+
+      toast({
+        title: "Profile Deleted",
+        description: "Your profile has been permanently deleted.",
+      });
+
+      // Sign out and redirect to home
+      await signOut();
+      navigate('/');
+
+    } catch (error) {
+      console.error('Profile deletion error:', error);
+      toast({
+        title: "Deletion Failed",
+        description: "There was an error deleting your profile. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -231,7 +313,7 @@ const Profile = () => {
               </div>
             </div>
 
-            <div className="pt-4">
+            <div className="pt-4 space-y-4">
               <Button 
                 type="submit"
                 disabled={loading}
@@ -239,6 +321,38 @@ const Profile = () => {
               >
                 {loading ? "Saving..." : "Save Profile"}
               </Button>
+              
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button 
+                    type="button"
+                    variant="destructive"
+                    className="w-full"
+                    disabled={loading || deleteLoading}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete Profile
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete your profile and remove all your data from our servers.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction 
+                      onClick={handleDeleteProfile}
+                      disabled={deleteLoading}
+                      className="bg-destructive hover:bg-destructive/90"
+                    >
+                      {deleteLoading ? "Deleting..." : "Delete Profile"}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </CardContent>
         </Card>
