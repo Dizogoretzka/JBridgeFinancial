@@ -70,7 +70,7 @@ const Blacklist = () => {
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-2">
               <img 
-                src="/lovable-uploads/91f08756-7121-4d45-8a4e-ad048eb44dc0.png" 
+                src="/assets/logo.png" 
                 alt="J Bridge Logo" 
                 className="w-8 h-8"
               />
