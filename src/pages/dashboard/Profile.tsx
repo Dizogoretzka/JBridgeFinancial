@@ -173,10 +173,8 @@ const Profile = () => {
 
       if (profileError) throw profileError;
 
-      // Delete user account
-      const { error: userError } = await supabase.auth.admin.deleteUser(user.id);
-
-      if (userError) throw userError;
+      // Sign out user (cannot delete auth user from client side)
+      await signOut();
 
       toast({
         title: "Profile Deleted",
