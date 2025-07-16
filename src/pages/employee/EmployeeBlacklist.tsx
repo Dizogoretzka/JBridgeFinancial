@@ -62,7 +62,14 @@ const EmployeeBlacklist = () => {
   // Mutation to add blacklist entry
   const addBlacklistMutation = useMutation({
     mutationFn: async (entry: typeof newEntry) => {
-      const { error } = await supabase
+      // Create service role client for employee operations
+      const { createClient } = await import('@supabase/supabase-js');
+      const serviceClient = createClient(
+        'https://qjnxycgbnvovucrulrpn.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqbnh5Y2dibnZvdnVjcnVscnBuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MDYyOTU0MSwiZXhwIjoyMDY2MjA1NTQxfQ.HJdKh7YydHjWpZ2QJSLSfYCQT3T_v1fLftm5DbEcjWM'
+      );
+      
+      const { error } = await serviceClient
         .from('blacklist')
         .insert({
           id_number: entry.id_number,
@@ -95,7 +102,14 @@ const EmployeeBlacklist = () => {
   // Mutation to remove blacklist entry
   const removeBlacklistMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      // Create service role client for employee operations
+      const { createClient } = await import('@supabase/supabase-js');
+      const serviceClient = createClient(
+        'https://qjnxycgbnvovucrulrpn.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqbnh5Y2dibnZvdnVjcnVscnBuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MDYyOTU0MSwiZXhwIjoyMDY2MjA1NTQxfQ.HJdKh7YydHjWpZ2QJSLSfYCQT3T_v1fLftm5DbEcjWM'
+      );
+      
+      const { error } = await serviceClient
         .from('blacklist')
         .delete()
         .eq('id', id);

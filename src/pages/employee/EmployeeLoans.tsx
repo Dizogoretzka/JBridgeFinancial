@@ -4,10 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEmployeeAuth } from "@/hooks/useEmployeeAuth";
-import { CheckCircle, XCircle, Clock, DollarSign } from "lucide-react";
+import { CheckCircle, XCircle, Clock, DollarSign, Ban } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 
@@ -37,6 +39,8 @@ const EmployeeLoans = () => {
   const [selectedApplication, setSelectedApplication] = useState<LoanApplication | null>(null);
   const [reviewNotes, setReviewNotes] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [blacklistDialog, setBlacklistDialog] = useState<{ open: boolean; application: LoanApplication | null }>({ open: false, application: null });
+  const [blacklistReason, setBlacklistReason] = useState("");
 
   // Fetch all loan applications with user profiles
   const { data: applications, isLoading, refetch } = useQuery({
@@ -75,7 +79,14 @@ const EmployeeLoans = () => {
   // Mutation to update loan application status
   const updateApplicationMutation = useMutation({
     mutationFn: async ({ id, status, notes }: { id: string; status: string; notes: string }) => {
-      const { error } = await supabase
+      // Create service role client for employee operations
+      const { createClient } = await import('@supabase/supabase-js');
+      const serviceClient = createClient(
+        'https://qjnxycgbnvovucrulrpn.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqbnh5Y2dibnZvdnVjcnVscnBuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MDYyOTU0MSwiZXhwIjoyMDY2MjA1NTQxfQ.HJdKh7YydHjWpZ2QJSLSfYCQT3T_v1fLftm5DbEcjWM'
+      );
+      
+      const { error } = await serviceClient
         .from('loan_applications')
         .update({
           status,
@@ -100,6 +111,53 @@ const EmployeeLoans = () => {
       toast({
         title: "Error",
         description: "Failed to update the application. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Mutation to add client to blacklist
+  const addToBlacklistMutation = useMutation({
+    mutationFn: async ({ application, reason }: { application: LoanApplication; reason: string }) => {
+      // Create service role client for employee operations
+      const { createClient } = await import('@supabase/supabase-js');
+      const serviceClient = createClient(
+        'https://qjnxycgbnvovucrulrpn.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqbnh5Y2dibnZvdnVjcnVscnBuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MDYyOTU0MSwiZXhwIjoyMDY2MjA1NTQxfQ.HJdKh7YydHjWpZ2QJSLSfYCQT3T_v1fLftm5DbEcjWM'
+      );
+
+      // First get client ID from profiles
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id_number')
+        .eq('id', application.user_id)
+        .single();
+
+      const { error } = await serviceClient
+        .from('blacklist')
+        .insert({
+          id_number: profile?.id_number || 'Unknown',
+          full_name: application.profiles?.full_name || 'Unknown',
+          phone_number: application.profiles?.phone_number || null,
+          reason: reason,
+          blacklisted_by: employee?.id
+        });
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['employee-blacklist'] });
+      toast({
+        title: "Client Blacklisted",
+        description: "The client has been successfully added to the blacklist.",
+      });
+      setBlacklistDialog({ open: false, application: null });
+      setBlacklistReason("");
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to add client to blacklist. Please try again.",
         variant: "destructive",
       });
     },
@@ -289,6 +347,15 @@ const EmployeeLoans = () => {
                     }>
                       {application.status}
                     </Badge>
+                    <Button
+                      onClick={() => setBlacklistDialog({ open: true, application })}
+                      variant="outline"
+                      size="sm"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Ban className="h-4 w-4 mr-1" />
+                      Blacklist
+                    </Button>
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button variant="outline" size="sm">
@@ -349,6 +416,58 @@ const EmployeeLoans = () => {
               >
                 <XCircle className="h-4 w-4 mr-2" />
                 Reject
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Blacklist Dialog */}
+      <Dialog open={blacklistDialog.open} onOpenChange={(open) => setBlacklistDialog({ open, application: null })}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Client to Blacklist</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm font-medium">Client:</p>
+              <p className="text-lg">{blacklistDialog.application?.profiles?.full_name || 'Unknown Client'}</p>
+              <p className="text-sm text-gray-600">{blacklistDialog.application?.profiles?.phone_number}</p>
+            </div>
+            <div>
+              <Label htmlFor="blacklist-reason">Reason for blacklisting:</Label>
+              <Textarea
+                id="blacklist-reason"
+                value={blacklistReason}
+                onChange={(e) => setBlacklistReason(e.target.value)}
+                placeholder="Enter the reason for blacklisting this client..."
+                className="mt-1"
+                rows={3}
+              />
+            </div>
+            <div className="flex space-x-2">
+              <Button
+                onClick={() => setBlacklistDialog({ open: false, application: null })}
+                variant="outline"
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  if (blacklistDialog.application) {
+                    addToBlacklistMutation.mutate({
+                      application: blacklistDialog.application,
+                      reason: blacklistReason
+                    });
+                  }
+                }}
+                variant="destructive"
+                className="flex-1"
+                disabled={addToBlacklistMutation.isPending || !blacklistReason.trim()}
+              >
+                <Ban className="h-4 w-4 mr-2" />
+                Blacklist Client
               </Button>
             </div>
           </div>
