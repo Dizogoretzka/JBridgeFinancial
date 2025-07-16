@@ -92,6 +92,13 @@ const AuthenticatedApp = () => {
       } />
 
       {/* Protected employee dashboard routes */}
+      <Route path="/employee" element={
+        <EmployeeProtectedRoute>
+          <EmployeeDashboardLayout>
+            <EmployeeDashboard />
+          </EmployeeDashboardLayout>
+        </EmployeeProtectedRoute>
+      } />
       <Route path="/employee/dashboard" element={
         <EmployeeProtectedRoute>
           <EmployeeDashboardLayout>
